@@ -303,14 +303,14 @@ void ParsedText::layoutCharacterWrap(const GfxRenderer& renderer, const int font
     int spareSpace = pageWidth - totalWordWidth;
 
     std::vector<std::string> lineWords;
-    std::vector<uint16_t> lineXPos;
+    std::vector<int16_t> lineXPos;
     std::vector<EpdFontFamily::Style> lineWordStyles;
 
     if (isLastLine || gapCount <= 0) {
       // Last line or single word: left align with normal spacing
       int xpos = 0;
       for (size_t i = 0; i < lineWordsVec.size(); i++) {
-        lineXPos.push_back(static_cast<uint16_t>(xpos));
+        lineXPos.push_back(static_cast<int16_t>(xpos));
         lineWords.push_back(lineWordsVec[i]);
         lineWordStyles.push_back(lineWordStylesVec[i]);
         xpos += lineWordWidths[i] + minSpacing;
@@ -323,7 +323,7 @@ void ParsedText::layoutCharacterWrap(const GfxRenderer& renderer, const int font
 
       int xpos = 0;
       for (size_t i = 0; i < lineWordsVec.size(); i++) {
-        lineXPos.push_back(static_cast<uint16_t>(xpos));
+        lineXPos.push_back(static_cast<int16_t>(xpos));
         lineWords.push_back(lineWordsVec[i]);
         lineWordStyles.push_back(lineWordStylesVec[i]);
 
