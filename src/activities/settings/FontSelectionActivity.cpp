@@ -201,11 +201,6 @@ void FontSelectionActivity::onExit() {
 }
 
 void FontSelectionActivity::loop() {
-  if (subActivity) {
-    subActivity->loop();
-    return;
-  }
-
   if (mappedInput.wasPressed(MappedInputManager::Button::Back)) {
     onBack();
     return;
@@ -263,7 +258,7 @@ void FontSelectionActivity::handleSelection() {
 
 void FontSelectionActivity::displayTaskLoop() {
   while (true) {
-    if (updateRequired && !subActivity) {
+    if (updateRequired) {
       updateRequired = false;
       xSemaphoreTake(displayMutex, portMAX_DELAY);
       render();
