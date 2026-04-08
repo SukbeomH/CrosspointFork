@@ -8,6 +8,17 @@
 
 **Tech Stack:** C++ (gnu++2a), PlatformIO, ESP32-C3, FreeRTOS, Arduino Framework
 
+**Hardware Constraints:** `.hxsk/docs/hardware-constraints.md` 필수 참조
+- RAM ~400KB (런타임 free heap ~120-180KB, WiFi 시 ~60KB 추가 소모)
+- CPU 싱글 코어 160MHz — 메인 루프 1회 < 100ms
+- e-ink 풀 리프레시 ~1초 — 불필요 갱신 억제
+- 새 기능 상주 RAM < 10KB (초과 시 이미지/CSS 파싱 실패 위험)
+
+**성능 목표:**
+- 페이지 넘김 < 500ms (캐시 히트), < 3s (캐시 미스)
+- 부트 → 읽기 복귀 < 5s
+- 새 기능으로 인한 기존 성능 저하 0%
+
 ---
 
 ## Phase 1: Quick Wins → `1.2.0-ko.2`
