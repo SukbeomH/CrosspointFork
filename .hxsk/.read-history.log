@@ -50,6 +50,7 @@
 /Users/sukbeom/.superset/projects/CrosspointFork/src/activities/reader/EpubReaderActivity.h
 /Users/sukbeom/.superset/projects/CrosspointFork/src/activities/reader/EpubReaderActivity.cpp
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/hal/HalDisplay.h
+<<<<<<< Updated upstream
 /Users/sukbeom/.local/pipx/venvs/platformio/lib/python3.14/site-packages/platformio/http.py
 /Users/sukbeom/.claude/projects/-Users-sukbeom--superset-projects-CrosspointFork/memory/project_upstream_sync.md
 /Users/sukbeom/.superset/projects/CrosspointFork/src/activities/settings/StatusBarSettingsActivity.h
@@ -60,3 +61,6 @@
 /Users/sukbeom/.superset/projects/CrosspointFork/docs/contributing/getting-started.md
 /Users/sukbeom/.superset/projects/CrosspointFork/.github/workflows/release.yml
 /private/tmp/claude-504/-Users-sukbeom--superset-projects-CrosspointFork/0cff48c2-5559-462e-b5ea-b87fd7244df1/tasks/bpewtvx1x.output
+=======
+/private/tmp/claude-504/-Users-sukbeom--superset-projects-CrosspointFork/0cff48c2-5559-462e-b5ea-b87fd7244df1/tasks/b3kc05xyt.output
+>>>>>>> Stashed changes
