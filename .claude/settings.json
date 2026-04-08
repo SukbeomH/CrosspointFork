@@ -1,0 +1,158 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/session-start.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/file-protect.py",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/read-before-edit.py",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/write-guard.py",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/bash-guard.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/track-read-history.py",
+            "timeout": 2
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/auto-format.sh",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/track-modifications.sh",
+            "timeout": 2
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/track-modifications.sh",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "auto|manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/pre-compact-save.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/post-turn-verify.sh",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/stop-context-save.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/collect-rationalization.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "## SubagentStop\n- 핵심 결과 2-3문장 요약\n- 코드 변경 시: `touch .hxsk/.modified-this-session`\n- 재사용 패턴 발견 시: PATTERNS.md에 추가 검토\n- 스킬 본문을 결과에 복제하지 말 것"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/save-transcript.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": ".hxsk/hooks/save-session-changes.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "plugin-dev@claude-plugins-official": true,
+    "agent-sdk-dev@claude-plugins-official": true
+  }
+}
