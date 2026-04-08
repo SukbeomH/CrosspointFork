@@ -335,6 +335,10 @@ bool SdFontData::loadGlyphFromSD(int glyphIndex, EpdGlyph* outGlyph) const {
   outGlyph->dataLength = static_cast<uint16_t>(fileGlyph.dataLength);
   outGlyph->dataOffset = fileGlyph.dataOffset;
 
+  Serial.printf("[DBG][SDFONT] glyph[%d] raw_adv=%u fp4_adv=%u (%.4fpx) w=%u h=%u\n",
+               glyphIndex, (unsigned)fileGlyph.advanceX, (unsigned)outGlyph->advanceX,
+               fp4::toFloat(outGlyph->advanceX), (unsigned)outGlyph->width, (unsigned)outGlyph->height);
+
   return true;
 }
 
