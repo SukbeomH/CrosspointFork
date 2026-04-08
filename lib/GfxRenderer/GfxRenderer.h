@@ -5,6 +5,7 @@
 #include <SdFontFamily.h>
 
 class FontCacheManager;
+class FontDecompressor;
 
 #include <cstring>
 #include <map>
