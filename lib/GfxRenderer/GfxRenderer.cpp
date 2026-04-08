@@ -206,7 +206,7 @@ static void renderCharImpl(const GfxRenderer& renderer, GfxRenderer::RenderMode 
 
 // IMPORTANT: This function is in critical rendering path and is called for every pixel. Please keep it as simple and
 // efficient as possible.
-void GfxRenderer::drawPixel(const int x, const int y, const bool state) const {
+void GfxRenderer::drawPixelRaw(const int x, const int y, const bool state) const {
   int phyX = 0;
   int phyY = 0;
 
@@ -228,6 +228,11 @@ void GfxRenderer::drawPixel(const int x, const int y, const bool state) const {
   } else {
     frameBuffer[byteIndex] |= 1 << bitPosition;  // Set bit
   }
+}
+
+void GfxRenderer::drawPixel(const int x, const int y, const bool state) const {
+  const bool effectiveState = (darkMode && renderMode == BW) ? !state : state;
+  drawPixelRaw(x, y, effectiveState);
 }
 
 int GfxRenderer::getTextWidth(const int fontId, const char* text, const EpdFontStyle style) const {
@@ -904,7 +909,8 @@ static unsigned long start_ms = 0;
 
 void GfxRenderer::clearScreen(const uint8_t color) const {
   start_ms = millis();
-  display.clearScreen(color);
+  const uint8_t effectiveColor = (darkMode && renderMode == BW && color == 0xFF) ? 0x00 : color;
+  display.clearScreen(effectiveColor);
 }
 
 void GfxRenderer::invertScreen() const {
@@ -1367,18 +1373,25 @@ void GfxRenderer::renderChar(const UnifiedFontFamily& fontFamily, const uint32_t
             if (syntheticBold) {
               drawPixel(screenX + 1, screenY, pixelState);  // Draw again 1px to the right
             }
-          } else if (renderMode == GRAYSCALE_MSB && (bmpVal == 1 || bmpVal == 2)) {
-            // Light gray (also mark the MSB if it's going to be a dark gray too)
-            // We have to flag pixels in reverse for the gray buffers, as 0 leave alone, 1 update
-            drawPixel(screenX, screenY, false);
-            if (syntheticBold) {
-              drawPixel(screenX + 1, screenY, false);
+          } else if (renderMode == GRAYSCALE_MSB) {
+            // Text darkness shifts more AA pixels into the "draw" bucket for a bolder look.
+            // bmpVal: 0=black, 1=dark gray, 2=light gray, 3=white
+            const bool hit = (textDarkness >= 2)   ? (bmpVal >= 1 && bmpVal <= 2)
+                             : (textDarkness == 1) ? (bmpVal == 1 || bmpVal == 2)
+                                                   : (bmpVal == 2);
+            if (hit) {
+              drawPixel(screenX, screenY, false);
+              if (syntheticBold) {
+                drawPixel(screenX + 1, screenY, false);
+              }
             }
-          } else if (renderMode == GRAYSCALE_LSB && bmpVal == 1) {
-            // Dark gray
-            drawPixel(screenX, screenY, false);
-            if (syntheticBold) {
-              drawPixel(screenX + 1, screenY, false);
+          } else if (renderMode == GRAYSCALE_LSB) {
+            const bool hit = (textDarkness >= 2) ? (bmpVal == 1 || bmpVal == 2) : (bmpVal == 1);
+            if (hit) {
+              drawPixel(screenX, screenY, false);
+              if (syntheticBold) {
+                drawPixel(screenX + 1, screenY, false);
+              }
             }
           }
         } else {
