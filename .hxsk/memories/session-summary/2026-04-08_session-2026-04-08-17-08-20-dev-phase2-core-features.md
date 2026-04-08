@@ -1,3 +1,19 @@
+---
+title: "Session [2026-04-08 17:08:20]: dev/phase2-core-features"
+tags:
+  - session-summary
+  - branch:dev/phase2-core-features
+  - auto
+type: session-summary
+created: 2026-04-08T08:08:20Z
+contextual_description: "[dev/phase2-core-features] 2 files. chore: bump version to 1.2.0-ko.2"
+keywords:
+  - .modified-this-session
+  - .read-history.log
+---
+
+## Session [2026-04-08 17:08:20]: dev/phase2-core-features
+
 # Current Session Context
 
 ## Session Narrative
@@ -28,3 +44,4 @@ b0d2ca2 chore: bump version to 1.2.0-ko.2
  .hxsk/.read-history.log      | 2 ++
  2 files changed, 2 insertions(+)
 ```
+modifications_count: 0
