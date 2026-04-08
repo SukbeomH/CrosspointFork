@@ -12,23 +12,31 @@
 // Falls back to global CrossPointSettings when no per-book file exists.
 struct BookSettings {
   // Reader settings (subset of CrossPointSettings)
-  uint8_t lineSpacing = 1;           // NORMAL
-  uint8_t paragraphAlignment = 0;    // JUSTIFIED
+  uint8_t lineSpacing = 1;         // NORMAL
+  uint8_t paragraphAlignment = 0;  // JUSTIFIED
   uint8_t extraParagraphSpacing = 0;
   uint8_t textAntiAliasing = 1;
   uint8_t hyphenationEnabled = 0;
   uint8_t screenMargin = 5;
-  uint8_t orientation = 0;  // PORTRAIT
+  uint8_t orientation = 0;       // PORTRAIT
   uint8_t refreshFrequency = 3;  // REFRESH_15 enum index
   uint8_t characterWrap = 1;
   uint8_t paragraphIndent = 0;
   uint8_t textDarkness = 0;
   uint8_t darkMode = 0;
 
+  // Status bar (per-book override of global status bar settings)
+  uint8_t statusBarChapterPageCount = 1;
+  uint8_t statusBarBookProgressPercentage = 1;
+  uint8_t statusBarProgressBar = 0;
+  uint8_t statusBarProgressBarThickness = 1;
+  uint8_t statusBarTitle = 1;
+  uint8_t statusBarBattery = 1;
+
   bool useCustomSettings = false;
 
-  static constexpr uint8_t FILE_VERSION = 1;
-  static constexpr size_t FIELD_COUNT = 12;
+  static constexpr uint8_t FILE_VERSION = 2;
+  static constexpr size_t FIELD_COUNT = 18;  // 12 reader + 6 status bar
 
   // Load from per-book file. Returns true if loaded successfully.
   bool loadFromFile(const std::string& bookCachePath) {
@@ -59,6 +67,12 @@ struct BookSettings {
     paragraphIndent = data[i++];
     textDarkness = data[i++];
     darkMode = data[i++];
+    statusBarChapterPageCount = data[i++];
+    statusBarBookProgressPercentage = data[i++];
+    statusBarProgressBar = data[i++];
+    statusBarProgressBarThickness = data[i++];
+    statusBarTitle = data[i++];
+    statusBarBattery = data[i++];
 
     useCustomSettings = true;
     LOG_DBG("BST", "Loaded per-book settings from %s", path.c_str());
@@ -91,6 +105,12 @@ struct BookSettings {
     data[i++] = paragraphIndent;
     data[i++] = textDarkness;
     data[i++] = darkMode;
+    data[i++] = statusBarChapterPageCount;
+    data[i++] = statusBarBookProgressPercentage;
+    data[i++] = statusBarProgressBar;
+    data[i++] = statusBarProgressBarThickness;
+    data[i++] = statusBarTitle;
+    data[i++] = statusBarBattery;
 
     f.write(data, sizeof(data));
     f.close();
@@ -111,6 +131,12 @@ struct BookSettings {
     paragraphIndent = SETTINGS.paragraphIndent;
     textDarkness = SETTINGS.textDarkness;
     darkMode = SETTINGS.darkMode;
+    statusBarChapterPageCount = SETTINGS.statusBarChapterPageCount;
+    statusBarBookProgressPercentage = SETTINGS.statusBarBookProgressPercentage;
+    statusBarProgressBar = SETTINGS.statusBarProgressBar;
+    statusBarProgressBarThickness = SETTINGS.statusBarProgressBarThickness;
+    statusBarTitle = SETTINGS.statusBarTitle;
+    statusBarBattery = SETTINGS.statusBarBattery;
     useCustomSettings = false;
   }
 
@@ -129,6 +155,12 @@ struct BookSettings {
     SETTINGS.paragraphIndent = paragraphIndent;
     SETTINGS.textDarkness = textDarkness;
     SETTINGS.darkMode = darkMode;
+    SETTINGS.statusBarChapterPageCount = statusBarChapterPageCount;
+    SETTINGS.statusBarBookProgressPercentage = statusBarBookProgressPercentage;
+    SETTINGS.statusBarProgressBar = statusBarProgressBar;
+    SETTINGS.statusBarProgressBarThickness = statusBarProgressBarThickness;
+    SETTINGS.statusBarTitle = statusBarTitle;
+    SETTINGS.statusBarBattery = statusBarBattery;
   }
 
   // Mark as customized (call when user changes any setting in-reader).

@@ -1,3 +1,18 @@
+---
+title: "Session [2026-04-08 17:13:41]: dev/phase2-core-features"
+tags:
+  - session-summary
+  - branch:dev/phase2-core-features
+  - auto
+type: session-summary
+created: 2026-04-08T08:13:41Z
+contextual_description: "[dev/phase2-core-features] 1 files. feat: add per-book settings with SD card persistence"
+keywords:
+  - .modified-this-session
+---
+
+## Session [2026-04-08 17:13:41]: dev/phase2-core-features
+
 # Current Session Context
 
 ## Session Narrative
@@ -26,3 +41,4 @@ b0d2ca2 chore: bump version to 1.2.0-ko.2
  .hxsk/.modified-this-session | 0
  1 file changed, 0 insertions(+), 0 deletions(-)
 ```
+modifications_count: 0
