@@ -58,6 +58,7 @@ void EpubReaderActivity::onEnter() {
   ReaderUtils::applyOrientation(renderer, SETTINGS.orientation);
 
   epub->setupCacheDir();
+  bookmarkStore.load(epub->getCachePath());
 
   FsFile f;
   if (Storage.openFileForRead("ERS", epub->getCachePath() + "/progress.bin", f)) {
@@ -95,6 +96,7 @@ void EpubReaderActivity::onEnter() {
 
 void EpubReaderActivity::onExit() {
   Activity::onExit();
+  bookmarkStore.save();
 
   // Reset orientation back to portrait for the rest of the UI
   renderer.setOrientation(GfxRenderer::Orientation::Portrait);
@@ -138,8 +140,24 @@ void EpubReaderActivity::loop() {
     }
   }
 
-  // Enter reader menu activity.
+  // Long-press Confirm toggles bookmark
+  if (mappedInput.isPressed(MappedInputManager::Button::Confirm) &&
+      mappedInput.getHeldTime() >= BOOKMARK_LONG_PRESS_MS && section && confirmPressStart == 0) {
+    confirmPressStart = millis();
+    const bool added =
+        bookmarkStore.toggle(static_cast<uint16_t>(currentSpineIndex), static_cast<uint16_t>(section->currentPage));
+    bookmarkStore.save();
+    LOG_DBG("ERS", "Bookmark %s at spine=%d page=%d", added ? "added" : "removed", currentSpineIndex,
+            section->currentPage);
+    requestUpdate();
+  }
   if (mappedInput.wasReleased(MappedInputManager::Button::Confirm)) {
+    confirmPressStart = 0;
+  }
+
+  // Enter reader menu activity (short press Confirm).
+  if (mappedInput.wasReleased(MappedInputManager::Button::Confirm) &&
+      mappedInput.getHeldTime() < BOOKMARK_LONG_PRESS_MS) {
     const int currentPage = section ? section->currentPage + 1 : 0;
     const int totalPages = section ? section->pageCount : 0;
     float bookProgress = 0.0f;

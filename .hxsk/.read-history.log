@@ -47,3 +47,5 @@
 /Users/sukbeom/.superset/projects/CrosspointFork/src/SettingsList.h
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/I18n/translations/english.yaml
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/I18n/translations/korean.yaml
+/Users/sukbeom/.superset/projects/CrosspointFork/src/activities/reader/EpubReaderActivity.h
+/Users/sukbeom/.superset/projects/CrosspointFork/src/activities/reader/EpubReaderActivity.cpp
