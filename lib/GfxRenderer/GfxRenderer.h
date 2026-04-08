@@ -46,6 +46,7 @@ class GfxRenderer {
   std::map<int, std::unique_ptr<UnifiedFontFamily>> fontMap;
   int fallbackFontId = 0;  // Default fallback font ID (set after fonts are loaded)
   FontDecompressor* fontDecompressor = nullptr;
+  uint8_t textDarkness = 0;  // 0=normal, 1=dark, 2=extra dark
 
   // Mutable because drawText() is const but needs to delegate scan-mode
   // recording to the (non-const) FontCacheManager. Same pragmatic compromise
@@ -88,6 +89,8 @@ class GfxRenderer {
   void clearFontCache() {
     if (fontDecompressor) fontDecompressor->clearCache();
   }
+  void setTextDarkness(uint8_t d) { textDarkness = d; }
+  uint8_t getTextDarkness() const { return textDarkness; }
   void setFontCacheManager(FontCacheManager* m) { fontCacheManager_ = m; }
   FontCacheManager* getFontCacheManager() const { return fontCacheManager_; }
   const std::map<int, std::unique_ptr<UnifiedFontFamily>>& getFontMap() const { return fontMap; }

@@ -26,7 +26,8 @@ class BookmarkStore {
     if (!Storage.openFileForRead("BKM", storagePath, file)) return;
 
     uint8_t version = 0;
-    if (file.read(reinterpret_cast<uint8_t*>(&version), sizeof(version)) != sizeof(version) || version != FILE_VERSION) {
+    if (file.read(reinterpret_cast<uint8_t*>(&version), sizeof(version)) != sizeof(version) ||
+        version != FILE_VERSION) {
       file.close();
       return;
     }
