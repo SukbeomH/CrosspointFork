@@ -6,6 +6,7 @@
 #include "BookSettings.h"
 #include "BookmarkStore.h"
 #include "EpubReaderMenuActivity.h"
+#include "ReadingStats.h"
 #include "activities/Activity.h"
 
 class EpubReaderActivity final : public Activity {
@@ -31,8 +32,10 @@ class EpubReaderActivity final : public Activity {
   bool skipNextButtonCheck = false;  // Skip button processing for one frame after subactivity exit
   bool automaticPageTurnActive = false;
 
-  // Per-book settings
+  // Per-book settings and stats
   BookSettings bookSettings;
+  ReadingStats readingStats;
+  ReadingSessionTracker sessionTracker;
   BookSettings savedGlobalSettings;  // Backup of global settings before applying per-book
 
   // Bookmark support

@@ -59,6 +59,8 @@ void EpubReaderActivity::onEnter() {
 
   epub->setupCacheDir();
   bookmarkStore.load(epub->getCachePath());
+  readingStats.loadFromFile(epub->getCachePath());
+  sessionTracker.start();
 
   // Load per-book settings (falls back to global if no per-book file)
   savedGlobalSettings.loadFromGlobal();  // Backup current global settings
@@ -105,6 +107,17 @@ void EpubReaderActivity::onExit() {
   Activity::onExit();
   bookmarkStore.save();
   bookSettings.saveToFile(epub ? epub->getCachePath() : "");
+
+  // End reading session and update stats
+  uint32_t sessionMs = sessionTracker.stop();
+  if (sessionMs >= ReadingStats::MIN_SESSION_MS) {
+    readingStats.totalReadingMs += sessionMs;
+    readingStats.sessionCount++;
+    readingStats.lastSessionMs = sessionMs;
+    LOG_DBG("ERS", "Session: %lu ms (total: %lu ms, #%d)", sessionMs, readingStats.totalReadingMs,
+            readingStats.sessionCount);
+  }
+  if (epub) readingStats.saveToFile(epub->getCachePath());
   savedGlobalSettings.applyToGlobal();  // Restore global settings
 
   // Reset orientation back to portrait for the rest of the UI
@@ -117,6 +130,8 @@ void EpubReaderActivity::onExit() {
 }
 
 void EpubReaderActivity::loop() {
+  sessionTracker.tick();
+
   if (!epub) {
     // Should never happen
     finish();

@@ -1,3 +1,18 @@
+---
+title: "Session [2026-04-08 17:24:11]: dev/phase2-core-features"
+tags:
+  - session-summary
+  - branch:dev/phase2-core-features
+  - auto
+type: session-summary
+created: 2026-04-08T08:24:12Z
+contextual_description: "[dev/phase2-core-features] 1 files. docs: rebrand as independent Korean fork project"
+keywords:
+  - .modified-this-session
+---
+
+## Session [2026-04-08 17:24:11]: dev/phase2-core-features
+
 # Current Session Context
 
 ## Session Narrative
@@ -26,3 +41,4 @@ d852209 feat: include status bar settings in per-book BookSettings
  .hxsk/.modified-this-session | 0
  1 file changed, 0 insertions(+), 0 deletions(-)
 ```
+modifications_count: 0
