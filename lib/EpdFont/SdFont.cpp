@@ -329,7 +329,7 @@ bool SdFontData::loadGlyphFromSD(int glyphIndex, EpdGlyph* outGlyph) const {
   // Convert from file format to runtime format
   outGlyph->width = fileGlyph.width;
   outGlyph->height = fileGlyph.height;
-  outGlyph->advanceX = fileGlyph.advanceX;
+  outGlyph->advanceX = fp4::fromPixel(fileGlyph.advanceX);
   outGlyph->left = fileGlyph.left;
   outGlyph->top = fileGlyph.top;
   outGlyph->dataLength = static_cast<uint16_t>(fileGlyph.dataLength);
@@ -521,7 +521,7 @@ void SdFont::getTextDimensions(const char* string, int* w, int* h) const {
   }
 
   int minX = 0, minY = 0, maxX = 0, maxY = 0;
-  int cursorX = 0;
+  int32_t cursorXFP = 0;
   const int cursorY = 0;
 
   uint32_t cp;
@@ -534,11 +534,12 @@ void SdFont::getTextDimensions(const char* string, int* w, int* h) const {
       continue;
     }
 
-    minX = std::min(minX, cursorX + glyph->left);
-    maxX = std::max(maxX, cursorX + glyph->left + glyph->width);
+    int cursorXPixels = fp4::toPixel(cursorXFP);
+    minX = std::min(minX, cursorXPixels + glyph->left);
+    maxX = std::max(maxX, cursorXPixels + glyph->left + glyph->width);
     minY = std::min(minY, cursorY + glyph->top - glyph->height);
     maxY = std::max(maxY, cursorY + glyph->top);
-    cursorX += glyph->advanceX;
+    cursorXFP += glyph->advanceX;
   }
 
   *w = maxX - minX;
