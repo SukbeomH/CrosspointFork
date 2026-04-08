@@ -206,7 +206,7 @@ static void renderCharImpl(const GfxRenderer& renderer, GfxRenderer::RenderMode 
 
 // IMPORTANT: This function is in critical rendering path and is called for every pixel. Please keep it as simple and
 // efficient as possible.
-void GfxRenderer::drawPixel(const int x, const int y, const bool state) const {
+void GfxRenderer::drawPixelRaw(const int x, const int y, const bool state) const {
   int phyX = 0;
   int phyY = 0;
 
@@ -228,6 +228,11 @@ void GfxRenderer::drawPixel(const int x, const int y, const bool state) const {
   } else {
     frameBuffer[byteIndex] |= 1 << bitPosition;  // Set bit
   }
+}
+
+void GfxRenderer::drawPixel(const int x, const int y, const bool state) const {
+  const bool effectiveState = (darkMode && renderMode == BW) ? !state : state;
+  drawPixelRaw(x, y, effectiveState);
 }
 
 int GfxRenderer::getTextWidth(const int fontId, const char* text, const EpdFontStyle style) const {
@@ -904,7 +909,8 @@ static unsigned long start_ms = 0;
 
 void GfxRenderer::clearScreen(const uint8_t color) const {
   start_ms = millis();
-  display.clearScreen(color);
+  const uint8_t effectiveColor = (darkMode && renderMode == BW && color == 0xFF) ? 0x00 : color;
+  display.clearScreen(effectiveColor);
 }
 
 void GfxRenderer::invertScreen() const {

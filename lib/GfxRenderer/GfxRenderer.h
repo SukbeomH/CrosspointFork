@@ -47,6 +47,7 @@ class GfxRenderer {
   int fallbackFontId = 0;  // Default fallback font ID (set after fonts are loaded)
   FontDecompressor* fontDecompressor = nullptr;
   uint8_t textDarkness = 0;  // 0=normal, 1=dark, 2=extra dark
+  bool darkMode = false;
 
   // Mutable because drawText() is const but needs to delegate scan-mode
   // recording to the (non-const) FontCacheManager. Same pragmatic compromise
@@ -112,7 +113,12 @@ class GfxRenderer {
   void clearScreen(uint8_t color = 0xFF) const;
   void getOrientedViewableTRBL(int* outTop, int* outRight, int* outBottom, int* outLeft) const;
 
+  // Dark mode
+  void setDarkMode(bool enabled) { darkMode = enabled; }
+  bool isDarkMode() const { return darkMode; }
+
   // Drawing
+  void drawPixelRaw(int x, int y, bool state = true) const;
   void drawPixel(int x, int y, bool state = true) const;
   void drawLine(int x1, int y1, int x2, int y2, bool state = true) const;
   void drawLine(int x1, int y1, int x2, int y2, int lineWidth, bool state) const;

@@ -207,6 +207,8 @@ class CrossPointSettings {
   uint8_t imageRendering = IMAGES_DISPLAY;
   // Text darkness for e-ink readability (0=normal, 1=dark, 2=extra dark)
   uint8_t textDarkness = 0;
+  // Dark mode (inverts black/white in BW rendering)
+  uint8_t darkMode = 0;
 
   ~CrossPointSettings() = default;
 

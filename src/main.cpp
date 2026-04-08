@@ -345,6 +345,7 @@ void loop() {
 
   renderer.setFadingFix(SETTINGS.fadingFix);
   renderer.setTextDarkness(SETTINGS.textDarkness);
+  renderer.setDarkMode(SETTINGS.darkMode != 0);
 
   if (Serial && millis() - lastMemPrint >= 10000) {
     LOG_INF("MEM", "Free: %d bytes, Total: %d bytes, Min Free: %d bytes, MaxAlloc: %d bytes", ESP.getFreeHeap(),
