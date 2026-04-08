@@ -10,9 +10,9 @@
 // Tracks total reading time and session count.
 // Persisted to .crosspoint/epub_<hash>/statistics.bin
 struct ReadingStats {
-  uint32_t totalReadingMs = 0;    // Total reading time in milliseconds
-  uint16_t sessionCount = 0;      // Number of reading sessions (3+ minutes)
-  uint32_t lastSessionMs = 0;     // Duration of last session
+  uint32_t totalReadingMs = 0;     // Total reading time in milliseconds
+  uint16_t sessionCount = 0;       // Number of reading sessions (3+ minutes)
+  uint32_t lastSessionMs = 0;      // Duration of last session
   uint32_t lastReadTimestamp = 0;  // Unix timestamp of last read (0 if unknown)
 
   static constexpr uint8_t FILE_VERSION = 1;
