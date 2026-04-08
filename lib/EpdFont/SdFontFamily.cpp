@@ -294,3 +294,27 @@ bool UnifiedFontFamily::hasBold() const {
   }
   return false;
 }
+
+const EpdFontData* UnifiedFontFamily::getData(EpdFontStyle style) const {
+  if (type == Type::FLASH && flashFont) {
+    return flashFont->getData(style);
+  }
+  // SD fonts don't have EpdFontData - return nullptr
+  return nullptr;
+}
+
+int8_t UnifiedFontFamily::getKerning(uint32_t leftCp, uint32_t rightCp, EpdFontStyle style) const {
+  if (type == Type::FLASH && flashFont) {
+    return flashFont->getKerning(leftCp, rightCp, style);
+  }
+  // SD fonts don't support kerning
+  return 0;
+}
+
+uint32_t UnifiedFontFamily::applyLigatures(uint32_t cp, const char*& text, EpdFontStyle style) const {
+  if (type == Type::FLASH && flashFont) {
+    return flashFont->applyLigatures(cp, text, style);
+  }
+  // SD fonts don't support ligatures - return codepoint as-is
+  return cp;
+}

@@ -110,6 +110,11 @@ class UnifiedFontFamily {
   // Flash font specific (returns nullptr for SD fonts)
   const EpdFontData* getFlashData(EpdFontStyle style = REGULAR) const;
 
+  // Upstream-compatible interface for kerning, ligatures, and font data access
+  const EpdFontData* getData(EpdFontStyle style = REGULAR) const;
+  int8_t getKerning(uint32_t leftCp, uint32_t rightCp, EpdFontStyle style = REGULAR) const;
+  uint32_t applyLigatures(uint32_t cp, const char*& text, EpdFontStyle style = REGULAR) const;
+
   // Check if bold variant is available (for synthetic bold decision)
   bool hasBold() const;
 };
