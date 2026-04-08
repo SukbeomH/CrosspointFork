@@ -1,11 +1,11 @@
 #pragma once
 
 #include <EpdFontFamily.h>
+#include <FontDecompressor.h>
 #include <HalDisplay.h>
 #include <SdFontFamily.h>
 
 class FontCacheManager;
-class FontDecompressor;
 
 #include <cstring>
 #include <map>
