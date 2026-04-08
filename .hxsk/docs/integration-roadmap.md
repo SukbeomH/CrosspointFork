@@ -115,6 +115,19 @@ CrossPoint 1.2.0 (upstream, 3275★)
 - 순차/셔플 모드
 - 프리뷰
 
+### 4.4 EPUB 최적화 강화 (출처: bigbag/epub-to-xtc-converter + upstream #1224)
+- **현황:** upstream 1.2.0에 기본 EPUB 최적화 내장 (FilesPage.html, 클라이언트 JS)
+  - baseline JPEG 변환, 그레이스케일, 480×800 리사이즈, SVG 제거, 품질 조절
+  - 브라우저(클라이언트) 측 처리 — ESP32 RAM 부담 없음 (JSZip 사용)
+- **추가 통합 가능 기능** (bigbag epub-to-xtc-converter에서):
+  - CSS 정리 (float, flex, grid, fixed positioning 제거)
+  - 임베디드 폰트 스트립 (파일 크기 대폭 감소)
+  - e-paper 최적화 CSS 주입
+  - WebP/TIFF/BMP 제거 (미지원 포맷)
+  - 알파 투명도 플래튼 (흰색 배경)
+- **구현 방식:** 모두 클라이언트(브라우저) JS — ESP32 부담 제로
+- **참고 레포:** `bigbag/epub-to-xtc-converter` (56★, 웹앱 + CLI)
+
 ---
 
 ## 의존성 그래프
