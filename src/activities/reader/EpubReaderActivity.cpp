@@ -674,17 +674,17 @@ void EpubReaderActivity::silentIndexNextChapterIfNeeded(const uint16_t viewportW
 
   Section nextSection(epub, nextSpineIndex, renderer);
   if (nextSection.loadSectionFile(SETTINGS.getReaderFontId(), SETTINGS.getReaderLineCompression(),
-                                  SETTINGS.extraParagraphSpacing, SETTINGS.paragraphAlignment, viewportWidth,
-                                  viewportHeight, SETTINGS.hyphenationEnabled, SETTINGS.embeddedStyle,
-                                  SETTINGS.imageRendering)) {
+                                  SETTINGS.extraParagraphSpacing, SETTINGS.paragraphIndent, SETTINGS.paragraphAlignment,
+                                  SETTINGS.characterWrap, viewportWidth, viewportHeight, SETTINGS.hyphenationEnabled,
+                                  SETTINGS.embeddedStyle, SETTINGS.imageRendering)) {
     return;
   }
 
   LOG_DBG("ERS", "Silently indexing next chapter: %d", nextSpineIndex);
   if (!nextSection.createSectionFile(SETTINGS.getReaderFontId(), SETTINGS.getReaderLineCompression(),
-                                     SETTINGS.extraParagraphSpacing, SETTINGS.paragraphAlignment, viewportWidth,
-                                     viewportHeight, SETTINGS.hyphenationEnabled, SETTINGS.embeddedStyle,
-                                     SETTINGS.imageRendering)) {
+                                     SETTINGS.extraParagraphSpacing, SETTINGS.paragraphIndent,
+                                     SETTINGS.paragraphAlignment, SETTINGS.characterWrap, viewportWidth, viewportHeight,
+                                     SETTINGS.hyphenationEnabled, SETTINGS.embeddedStyle, SETTINGS.imageRendering)) {
     LOG_ERR("ERS", "Failed silent indexing for chapter: %d", nextSpineIndex);
   }
 }
