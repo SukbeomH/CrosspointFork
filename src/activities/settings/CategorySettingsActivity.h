@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "activities/ActivityWithSubactivity.h"
+#include "activities/Activity.h"
 
 class CrossPointSettings;
 
@@ -41,7 +41,7 @@ struct SettingInfo {
   }
 };
 
-class CategorySettingsActivity final : public ActivityWithSubactivity {
+class CategorySettingsActivity final : public Activity {
   TaskHandle_t displayTaskHandle = nullptr;
   SemaphoreHandle_t displayMutex = nullptr;
   bool updateRequired = false;
@@ -59,7 +59,7 @@ class CategorySettingsActivity final : public ActivityWithSubactivity {
  public:
   CategorySettingsActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, const char* categoryName,
                            const SettingInfo* settingsList, int settingsCount, const std::function<void()>& onGoBack)
-      : ActivityWithSubactivity("CategorySettings", renderer, mappedInput),
+      : Activity("CategorySettings", renderer, mappedInput),
         categoryName(categoryName),
         settingsList(settingsList),
         settingsCount(settingsCount),

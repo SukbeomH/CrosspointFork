@@ -7,17 +7,17 @@
 #include <string>
 #include <vector>
 
-#include "activities/ActivityWithSubactivity.h"
+#include "activities/Activity.h"
 
 /**
  * Activity for selecting a custom font from /.crosspoint/fonts folder.
  * Lists .bin font files and allows the user to select one.
  */
-class FontSelectionActivity final : public ActivityWithSubactivity {
+class FontSelectionActivity final : public Activity {
  public:
   explicit FontSelectionActivity(GfxRenderer& renderer, MappedInputManager& mappedInput,
                                  const std::function<void()>& onBack)
-      : ActivityWithSubactivity("FontSelection", renderer, mappedInput), onBack(onBack) {}
+      : Activity("FontSelection", renderer, mappedInput), onBack(onBack) {}
 
   void onEnter() override;
   void onExit() override;

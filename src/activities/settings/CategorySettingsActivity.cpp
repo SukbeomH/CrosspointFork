@@ -32,7 +32,7 @@ void CategorySettingsActivity::onEnter() {
 }
 
 void CategorySettingsActivity::onExit() {
-  ActivityWithSubactivity::onExit();
+  Activity::onExit();
 
   // Wait until not rendering to delete task to avoid killing mid-instruction to EPD
   xSemaphoreTake(displayMutex, portMAX_DELAY);

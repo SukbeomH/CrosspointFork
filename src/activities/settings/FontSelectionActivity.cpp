@@ -171,7 +171,7 @@ void FontSelectionActivity::loadFontList() {
 }
 
 void FontSelectionActivity::onEnter() {
-  ActivityWithSubactivity::onEnter();
+  Activity::onEnter();
 
   displayMutex = xSemaphoreCreateMutex();
 
@@ -189,7 +189,7 @@ void FontSelectionActivity::onEnter() {
 }
 
 void FontSelectionActivity::onExit() {
-  ActivityWithSubactivity::onExit();
+  Activity::onExit();
 
   xSemaphoreTake(displayMutex, portMAX_DELAY);
   if (displayTaskHandle) {
