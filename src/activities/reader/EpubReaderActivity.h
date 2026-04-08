@@ -3,6 +3,7 @@
 #include <Epub/FootnoteEntry.h>
 #include <Epub/Section.h>
 
+#include "BookSettings.h"
 #include "BookmarkStore.h"
 #include "EpubReaderMenuActivity.h"
 #include "activities/Activity.h"
@@ -29,6 +30,10 @@ class EpubReaderActivity final : public Activity {
   bool pendingScreenshot = false;
   bool skipNextButtonCheck = false;  // Skip button processing for one frame after subactivity exit
   bool automaticPageTurnActive = false;
+
+  // Per-book settings
+  BookSettings bookSettings;
+  BookSettings savedGlobalSettings;  // Backup of global settings before applying per-book
 
   // Bookmark support
   BookmarkStore bookmarkStore;

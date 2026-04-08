@@ -60,6 +60,13 @@ void EpubReaderActivity::onEnter() {
   epub->setupCacheDir();
   bookmarkStore.load(epub->getCachePath());
 
+  // Load per-book settings (falls back to global if no per-book file)
+  savedGlobalSettings.loadFromGlobal();  // Backup current global settings
+  if (!bookSettings.loadFromFile(epub->getCachePath())) {
+    bookSettings.loadFromGlobal();
+  }
+  bookSettings.applyToGlobal();  // Apply per-book settings for rendering
+
   FsFile f;
   if (Storage.openFileForRead("ERS", epub->getCachePath() + "/progress.bin", f)) {
     uint8_t data[6];
@@ -97,6 +104,8 @@ void EpubReaderActivity::onEnter() {
 void EpubReaderActivity::onExit() {
   Activity::onExit();
   bookmarkStore.save();
+  bookSettings.saveToFile(epub ? epub->getCachePath() : "");
+  savedGlobalSettings.applyToGlobal();  // Restore global settings
 
   // Reset orientation back to portrait for the rest of the UI
   renderer.setOrientation(GfxRenderer::Orientation::Portrait);
