@@ -66,3 +66,6 @@
 >>>>>>> Stashed changes
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/SdFont.cpp
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/EpdFontData.h
+/Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/scripts/fontconvert.py
+/Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/SdFontFormat.h
+/Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/scripts/ttf_to_epdfont.py
