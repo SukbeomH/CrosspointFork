@@ -196,9 +196,7 @@ void SettingsActivity::toggleCurrentSetting() {
         startActivityForResult(std::make_unique<LanguageSelectActivity>(renderer, mappedInput), resultHandler);
         break;
       case SettingAction::FontSelection:
-        startActivityForResult(
-            std::make_unique<FontSelectionActivity>(renderer, mappedInput, [this] { updateRequired = true; }),
-            resultHandler);
+        startActivityForResult(std::make_unique<FontSelectionActivity>(renderer, mappedInput, [] {}), resultHandler);
         break;
       case SettingAction::None:
         // Do nothing
