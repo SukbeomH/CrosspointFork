@@ -56,3 +56,6 @@
 /Users/sukbeom/.superset/projects/CrosspointFork/src/activities/settings/StatusBarSettingsActivity.cpp
 /Users/sukbeom/.superset/projects/CrosspointFork/src/components/themes/BaseTheme.h
 /Users/sukbeom/.superset/projects/CrosspointFork/src/BookSettings.h
+/Users/sukbeom/.superset/projects/CrosspointFork/src/network/OtaUpdater.cpp
+/Users/sukbeom/.superset/projects/CrosspointFork/docs/contributing/getting-started.md
+/Users/sukbeom/.superset/projects/CrosspointFork/.github/workflows/release.yml
