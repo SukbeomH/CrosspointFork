@@ -1,12 +1,16 @@
 #pragma once
 
 #include <EpdFontFamily.h>
-#include <FontDecompressor.h>
 #include <HalDisplay.h>
 #include <SdFontFamily.h>
 
+class FontCacheManager;
+
+#include <cstring>
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "Bitmap.h"
 
@@ -41,6 +45,12 @@ class GfxRenderer {
   std::map<int, std::unique_ptr<UnifiedFontFamily>> fontMap;
   int fallbackFontId = 0;  // Default fallback font ID (set after fonts are loaded)
   FontDecompressor* fontDecompressor = nullptr;
+
+  // Mutable because drawText() is const but needs to delegate scan-mode
+  // recording to the (non-const) FontCacheManager. Same pragmatic compromise
+  // as before, concentrated in a single pointer instead of four fields.
+  mutable FontCacheManager* fontCacheManager_ = nullptr;
+
   void renderChar(const UnifiedFontFamily& fontFamily, uint32_t cp, int* x, int* y, bool pixelState,
                   EpdFontStyle style) const;
   void freeBwBufferChunks();
@@ -77,6 +87,9 @@ class GfxRenderer {
   void clearFontCache() {
     if (fontDecompressor) fontDecompressor->clearCache();
   }
+  void setFontCacheManager(FontCacheManager* m) { fontCacheManager_ = m; }
+  FontCacheManager* getFontCacheManager() const { return fontCacheManager_; }
+  const std::map<int, std::unique_ptr<UnifiedFontFamily>>& getFontMap() const { return fontMap; }
 
   // Orientation control (affects logical width/height and coordinate transforms)
   void setOrientation(const Orientation o) { orientation = o; }
@@ -124,11 +137,22 @@ class GfxRenderer {
   void drawText(int fontId, int x, int y, const char* text, int8_t letterSpacing, bool black = true,
                 EpdFontStyle style = REGULAR) const;
   int getSpaceWidth(int fontId, EpdFontStyle style = REGULAR) const;
+  /// Returns the total inter-word advance: fp4::toPixel(spaceAdvance + kern(leftCp,' ') + kern(' ',rightCp)).
+  /// Using a single snap avoids the +/-1 px rounding error that arises when space advance and kern are
+  /// snapped separately and then added as integers.
+  int getSpaceAdvance(int fontId, uint32_t leftCp, uint32_t rightCp, EpdFontStyle style) const;
+  /// Returns the kerning adjustment between two adjacent codepoints.
+  int getKerning(int fontId, uint32_t leftCp, uint32_t rightCp, EpdFontStyle style) const;
   int countUtf8Chars(const char* text) const;
   int getTextAdvanceX(int fontId, const char* text, EpdFontStyle style = REGULAR) const;
   int getFontAscenderSize(int fontId) const;
   int getLineHeight(int fontId) const;
   std::string truncatedText(int fontId, const char* text, int maxWidth, EpdFontStyle style = REGULAR) const;
+  /// Word-wrap \p text into at most \p maxLines lines, each no wider than
+  /// \p maxWidth pixels. Overflowing words and excess lines are UTF-8-safely
+  /// truncated with an ellipsis (U+2026).
+  std::vector<std::string> wrappedText(int fontId, const char* text, int maxWidth, int maxLines,
+                                       EpdFontStyle style = REGULAR) const;
 
   // Helper for drawing rotated text (90 degrees clockwise, for side buttons)
   void drawTextRotated90CW(int fontId, int x, int y, const char* text, bool black = true,
