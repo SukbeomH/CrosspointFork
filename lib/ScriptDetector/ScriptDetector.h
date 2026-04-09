@@ -71,9 +71,9 @@ inline bool isThaiCodepoint(uint32_t cp) { return cp >= 0x0E00 && cp <= 0x0E7F; 
  */
 inline bool isArabicCodepoint(uint32_t cp) {
   return (cp >= 0x0600 && cp <= 0x06FF) ||  // Arabic
-         (cp >= 0x0750 && cp <= 0x077F) ||   // Arabic Supplement
-         (cp >= 0xFB50 && cp <= 0xFDFF) ||   // Arabic Presentation Forms-A
-         (cp >= 0xFE70 && cp <= 0xFEFF);     // Arabic Presentation Forms-B
+         (cp >= 0x0750 && cp <= 0x077F) ||  // Arabic Supplement
+         (cp >= 0xFB50 && cp <= 0xFDFF) ||  // Arabic Presentation Forms-A
+         (cp >= 0xFE70 && cp <= 0xFEFF);    // Arabic Presentation Forms-B
 }
 
 /**
