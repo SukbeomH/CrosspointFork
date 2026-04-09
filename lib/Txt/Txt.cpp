@@ -222,7 +222,7 @@ bool hasDigitInRange(const char* s, int start, int end) {
 /// "회" = U+D68C → 0xED 0x9A 0x8C
 /// "부" = U+BD80 → 0xEB 0xB6 0x80
 bool matchKoreanChapter(const char* s, int len) {
-  if (len < 9) return false;  // At minimum: 제(3) + digit(1) + 장(3) = 7, but be safe
+  if (len < 7) return false;  // Minimum: 제(3) + digit(1) + 장(3) = 7
   for (int i = 0; i <= len - 7; i++) {
     uint8_t b0 = static_cast<uint8_t>(s[i]);
     uint8_t b1 = static_cast<uint8_t>(s[i + 1]);
@@ -255,7 +255,7 @@ bool matchKoreanChapter(const char* s, int len) {
 /// "节" = U+8282 → 0xE8 0x8A 0x82
 /// "回" = U+56DE → 0xE5 0x9B 0x9E
 bool matchChineseChapter(const char* s, int len) {
-  if (len < 9) return false;
+  if (len < 7) return false;  // Minimum: 第(3) + digit(1) + 章(3) = 7
   for (int i = 0; i <= len - 6; i++) {
     uint8_t b0 = static_cast<uint8_t>(s[i]);
     uint8_t b1 = static_cast<uint8_t>(s[i + 1]);
@@ -358,9 +358,12 @@ std::string extractTitle(const char* line, int len, int maxChars = 30) {
 
 void Txt::detectChapters() {
   if (chaptersDetected) return;
-  chaptersDetected = true;
 
   if (!loaded) return;
+  chaptersDetected = true;
+
+  // Ensure cache directory is set up before loading
+  setupCacheDir();
 
   // Try loading from cache first
   if (loadChapterCache()) {
@@ -390,11 +393,11 @@ void Txt::detectChapters() {
       if (bufLen > 0) {
         // Skip UTF-8 BOM at start of file
         int start = 0;
-        if (skipBom && bufLen >= 3) {
-          if (static_cast<uint8_t>(lineBuf[0]) == 0xEF && static_cast<uint8_t>(lineBuf[1]) == 0xBB &&
-              static_cast<uint8_t>(lineBuf[2]) == 0xBF) {
+        if (skipBom) {
+          skipBom = false;
+          if (bufLen >= 3 && static_cast<uint8_t>(lineBuf[0]) == 0xEF &&
+              static_cast<uint8_t>(lineBuf[1]) == 0xBB && static_cast<uint8_t>(lineBuf[2]) == 0xBF) {
             start = 3;
-            skipBom = false;
           }
         }
 
