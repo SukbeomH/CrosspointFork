@@ -1,7 +1,10 @@
 #pragma once
 
+#include <string>
+
 #include "EpdFontFamily.h"
 #include "SdFont.h"
+#include "StreamingEpdFont.h"
 
 /**
  * SD Card font family - similar interface to EpdFontFamily but uses SdFont.
@@ -61,17 +64,77 @@ class SdFontFamily {
 };
 
 /**
- * Unified font family that can hold either EpdFontFamily (flash) or SdFontFamily (SD card).
- * This allows GfxRenderer to work with both types transparently.
+ * Streaming SD font family - uses StreamingEpdFont for lower RAM usage.
+ * Drop-in alternative to SdFontFamily with identical interface.
+ * RAM savings: ~45KB per font (streams bitmap data from SD on demand).
+ */
+class StreamingSdFontFamily {
+ private:
+  StreamingEpdFont* regular;
+  StreamingEpdFont* bold;
+  StreamingEpdFont* italic;
+  StreamingEpdFont* boldItalic;
+  bool ownsPointers;
+
+  // Store paths for deferred loading
+  std::string regularPath_;
+  std::string boldPath_;
+  std::string italicPath_;
+  std::string boldItalicPath_;
+
+  StreamingEpdFont* getFont(EpdFontStyle style) const;
+
+ public:
+  // Constructor with file paths (creates StreamingEpdFont objects, call load() to open)
+  explicit StreamingSdFontFamily(const char* regularPath, const char* boldPath = nullptr,
+                                 const char* italicPath = nullptr, const char* boldItalicPath = nullptr);
+
+  ~StreamingSdFontFamily();
+
+  // Disable copy
+  StreamingSdFontFamily(const StreamingSdFontFamily&) = delete;
+  StreamingSdFontFamily& operator=(const StreamingSdFontFamily&) = delete;
+
+  // Enable move
+  StreamingSdFontFamily(StreamingSdFontFamily&& other) noexcept;
+  StreamingSdFontFamily& operator=(StreamingSdFontFamily&& other) noexcept;
+
+  // Load all fonts in the family
+  bool load();
+  bool isLoaded() const;
+
+  // SdFontFamily-compatible interface
+  void getTextDimensions(const char* string, int* w, int* h, EpdFontStyle style = REGULAR) const;
+  bool hasPrintableChars(const char* string, EpdFontStyle style = REGULAR) const;
+  const EpdGlyph* getGlyph(uint32_t cp, EpdFontStyle style = REGULAR) const;
+  const uint8_t* getGlyphBitmap(uint32_t cp, EpdFontStyle style = REGULAR) const;
+
+  // Font metadata
+  uint8_t getAdvanceY(EpdFontStyle style = REGULAR) const;
+  int8_t getAscender(EpdFontStyle style = REGULAR) const;
+  int8_t getDescender(EpdFontStyle style = REGULAR) const;
+  bool is2Bit(EpdFontStyle style = REGULAR) const;
+  bool hasBold() const { return bold != nullptr; }
+
+  // Memory diagnostics
+  size_t getMemoryUsage(EpdFontStyle style = REGULAR) const;
+  void logCacheStats(EpdFontStyle style = REGULAR) const;
+};
+
+/**
+ * Unified font family that can hold either EpdFontFamily (flash), SdFontFamily (SD card),
+ * or StreamingSdFontFamily (streaming SD with LRU cache).
+ * This allows GfxRenderer to work with all types transparently.
  */
 class UnifiedFontFamily {
  public:
-  enum class Type { FLASH, SD };
+  enum class Type { FLASH, SD, STREAMING_SD };
 
  private:
   Type type;
-  const EpdFontFamily* flashFont;  // Non-owning pointer for flash fonts (they're global)
-  SdFontFamily* sdFont;            // Owned pointer for SD fonts
+  const EpdFontFamily* flashFont;          // Non-owning pointer for flash fonts (they're global)
+  SdFontFamily* sdFont;                    // Owned pointer for SD fonts
+  StreamingSdFontFamily* streamingSdFont;  // Owned pointer for streaming SD fonts
 
  public:
   // Construct from flash font (EpdFontFamily) - stores pointer, does not copy
@@ -79,6 +142,9 @@ class UnifiedFontFamily {
 
   // Construct from SD font family (takes ownership)
   explicit UnifiedFontFamily(SdFontFamily* font);
+
+  // Construct from streaming SD font family (takes ownership)
+  explicit UnifiedFontFamily(StreamingSdFontFamily* font);
 
   ~UnifiedFontFamily();
 
@@ -91,7 +157,7 @@ class UnifiedFontFamily {
   UnifiedFontFamily& operator=(UnifiedFontFamily&& other) noexcept;
 
   Type getType() const { return type; }
-  bool isSdFont() const { return type == Type::SD; }
+  bool isSdFont() const { return type == Type::SD || type == Type::STREAMING_SD; }
 
   // Unified interface
   void getTextDimensions(const char* string, int* w, int* h, EpdFontStyle style = REGULAR) const;
