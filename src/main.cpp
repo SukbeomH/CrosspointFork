@@ -85,10 +85,6 @@ static bool sdFontsLoaded[6] = {false, false, false, false, false, false};
 enum SdFontIndex {
   SD_PRETENDARD_10 = 0,
   SD_PRETENDARD_12 = 1,
-  SD_EULYOO_12 = 2,
-  SD_EULYOO_14 = 3,
-  SD_EULYOO_16 = 4,
-  SD_EULYOO_18 = 5
 };
 
 // Load custom reader font from SD card if configured
