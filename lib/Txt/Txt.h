@@ -4,6 +4,13 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+
+/// Detected chapter entry (title + byte offset in file).
+struct TxtChapterInfo {
+  std::string title;
+  size_t byteOffset = 0;
+};
 
 class Txt {
   std::string filepath;
@@ -11,6 +18,10 @@ class Txt {
   std::string cachePath;
   bool loaded = false;
   size_t fileSize = 0;
+
+  /// Detected chapters (populated by detectChapters).
+  std::vector<TxtChapterInfo> chapters;
+  bool chaptersDetected = false;
 
  public:
   explicit Txt(std::string path, std::string cacheBasePath);
@@ -30,4 +41,14 @@ class Txt {
 
   // Read content from file
   [[nodiscard]] bool readContent(uint8_t* buffer, size_t offset, size_t length) const;
+
+  // Chapter detection — streaming scan for Korean/Chinese/English patterns.
+  // Must be called after load(). Safe to call multiple times (cached).
+  void detectChapters();
+  [[nodiscard]] bool hasChapters() const { return !chapters.empty(); }
+  [[nodiscard]] const std::vector<TxtChapterInfo>& getChapters() const { return chapters; }
+
+  // Save/load chapter cache to avoid re-scanning
+  void saveChapterCache() const;
+  bool loadChapterCache();
 };
