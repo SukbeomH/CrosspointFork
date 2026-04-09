@@ -133,7 +133,10 @@ class CrossPointSettings {
   enum HIDE_BATTERY_PERCENTAGE { HIDE_NEVER = 0, HIDE_READER = 1, HIDE_ALWAYS = 2, HIDE_BATTERY_PERCENTAGE_COUNT };
 
   // UI Theme
-  enum UI_THEME { CLASSIC = 0, LYRA = 1, LYRA_3_COVERS = 2 };
+  enum UI_THEME { CLASSIC = 0, LYRA = 1, LYRA_3_COVERS = 2, UI_THEME_COUNT };
+
+  // Shortcut location (Home screen vs Apps hub)
+  enum SHORTCUT_LOCATION { SHORTCUT_HOME = 0, SHORTCUT_APPS = 1, SHORTCUT_LOCATION_COUNT };
 
   // Image rendering in EPUB reader
   enum IMAGE_RENDERING { IMAGES_DISPLAY = 0, IMAGES_PLACEHOLDER = 1, IMAGES_SUPPRESS = 2, IMAGE_RENDERING_COUNT };
@@ -209,6 +212,23 @@ class CrossPointSettings {
   uint8_t textDarkness = 0;
   // Dark mode (inverts black/white in BW rendering)
   uint8_t darkMode = 0;
+
+  // Home/Apps shortcut configuration
+  // Apps hub position in Home menu
+  uint8_t appsHubShortcutOrder = 1;
+  // Per-shortcut location (SHORTCUT_HOME or SHORTCUT_APPS), order, and visibility
+  uint8_t browseFilesShortcut = SHORTCUT_HOME;
+  uint8_t browseFilesShortcutOrder = 0;
+  uint8_t browseFilesShortcutVisible = 1;
+  uint8_t recentBooksShortcut = SHORTCUT_HOME;
+  uint8_t recentBooksShortcutOrder = 2;
+  uint8_t recentBooksShortcutVisible = 1;
+  uint8_t fileTransferShortcut = SHORTCUT_APPS;
+  uint8_t fileTransferShortcutOrder = 3;
+  uint8_t fileTransferShortcutVisible = 1;
+  uint8_t settingsShortcut = SHORTCUT_APPS;
+  uint8_t settingsShortcutOrder = 4;
+  uint8_t settingsShortcutVisible = 1;
 
   ~CrossPointSettings() = default;
 

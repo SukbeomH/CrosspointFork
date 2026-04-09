@@ -121,6 +121,13 @@ bool JsonSettingsIO::saveSettings(const CrossPointSettings& s, const char* path)
   doc["frontButtonLeft"] = s.frontButtonLeft;
   doc["frontButtonRight"] = s.frontButtonRight;
 
+  // Shortcut order values — not cycled through settings UI, only reordered programmatically.
+  doc["appsHubShortcutOrder"] = s.appsHubShortcutOrder;
+  doc["browseFilesShortcutOrder"] = s.browseFilesShortcutOrder;
+  doc["recentBooksShortcutOrder"] = s.recentBooksShortcutOrder;
+  doc["fileTransferShortcutOrder"] = s.fileTransferShortcutOrder;
+  doc["settingsShortcutOrder"] = s.settingsShortcutOrder;
+
   String json;
   serializeJson(doc, json);
   return Storage.writeFile(path, json);
@@ -199,6 +206,13 @@ bool JsonSettingsIO::loadSettings(CrossPointSettings& s, const char* json, bool*
   s.frontButtonRight =
       clamp(doc["frontButtonRight"] | (uint8_t)S::FRONT_HW_RIGHT, S::FRONT_BUTTON_HARDWARE_COUNT, S::FRONT_HW_RIGHT);
   CrossPointSettings::validateFrontButtonMapping(s);
+
+  // Shortcut order values
+  s.appsHubShortcutOrder = doc["appsHubShortcutOrder"] | s.appsHubShortcutOrder;
+  s.browseFilesShortcutOrder = doc["browseFilesShortcutOrder"] | s.browseFilesShortcutOrder;
+  s.recentBooksShortcutOrder = doc["recentBooksShortcutOrder"] | s.recentBooksShortcutOrder;
+  s.fileTransferShortcutOrder = doc["fileTransferShortcutOrder"] | s.fileTransferShortcutOrder;
+  s.settingsShortcutOrder = doc["settingsShortcutOrder"] | s.settingsShortcutOrder;
 
   LOG_DBG("CPS", "Settings loaded from file");
 
