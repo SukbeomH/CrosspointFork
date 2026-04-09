@@ -33,6 +33,22 @@ jobs:
           PATH="/usr/lib/llvm-21/bin:$PATH" ./bin/clang-format-fix
           git diff --exit-code || (echo "Please run 'bin/clang-format-fix' to fix formatting issues" && exit 1)
 
+  host-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Configure host tests
+        run: cmake -S test/host -B test/host/build
+
+      - name: Build host tests
+        run: cmake --build test/host/build
+
+      - name: Run host tests
+        run: cd test/host/build && ctest --output-on-failure
+
   cppcheck:
     runs-on: ubuntu-latest
     steps:
@@ -110,6 +126,7 @@ jobs:
       - build
       - clang-format
       - cppcheck
+      - host-tests
     if: always()
     runs-on: ubuntu-latest
     steps:
