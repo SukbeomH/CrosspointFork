@@ -34,9 +34,7 @@ MappedInputManager mappedInputManager(gpio);
 GfxRenderer renderer(display);
 ActivityManager activityManager(renderer, mappedInputManager);
 FontDecompressor fontDecompressor;
-// FontCacheManager disabled: ko fork uses UnifiedFontFamily map (SD fonts)
-// which is incompatible with upstream's EpdFontFamily map.
-// TODO: Adapt FontCacheManager to work with UnifiedFontFamily
+FontCacheManager fontCacheManager(renderer.getFontMap());
 
 // UI Font (Pretendard 10pt) - Regular only, synthetic bold applied by renderer
 EpdFont pretendard10RegularFont(&pretendard_10_regular);
@@ -231,7 +229,8 @@ void setupDisplayAndFonts() {
   if (!fontDecompressor.init()) {
     LOG_ERR("MAIN", "Font decompressor init failed");
   }
-  // FontCacheManager disabled for ko fork (see TODO above)
+  fontCacheManager.setFontDecompressor(&fontDecompressor);
+  renderer.setFontCacheManager(&fontCacheManager);
   renderer.setFontDecompressor(&fontDecompressor);
 
   // UI font (Pretendard 10pt) - used for all UI sizes in Korean version

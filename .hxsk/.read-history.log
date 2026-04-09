@@ -69,3 +69,5 @@
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/scripts/fontconvert.py
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/SdFontFormat.h
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/scripts/ttf_to_epdfont.py
+/Users/sukbeom/.superset/projects/CrosspointFork/lib/GfxRenderer/FontCacheManager.h
+/Users/sukbeom/.superset/projects/CrosspointFork/lib/GfxRenderer/FontCacheManager.cpp
