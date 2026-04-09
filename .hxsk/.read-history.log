@@ -75,3 +75,9 @@
 /Users/sukbeom/.superset/projects/CrosspointFork/bin/clang-format-fix
 /private/tmp/claude-504/-Users-sukbeom--superset-projects-CrosspointFork/0cff48c2-5559-462e-b5ea-b87fd7244df1/tasks/bxzduqcum.output
 /Users/sukbeom/.superset/projects/CrosspointFork/CLAUDE.md
+/Users/sukbeom/.superset/projects/CrosspointFork/.claude/worktrees/agent-a5112ce6/platformio.ini
+/Users/sukbeom/.superset/projects/CrosspointFork/.claude/worktrees/agent-a5112ce6/.github/workflows/release.yml
+/Users/sukbeom/.superset/projects/CrosspointFork/.claude/worktrees/agent-a5112ce6/.github/workflows/ci.yml
+/Users/sukbeom/.superset/projects/CrosspointFork/.claude/worktrees/agent-a5112ce6/.github/workflows/release_candidate.yml
+/Users/sukbeom/.superset/projects/CrosspointFork/.claude/worktrees/agent-a5112ce6/.github/workflows/pr-formatting-check.yml
+/Users/sukbeom/.superset/projects/CrosspointFork/.claude/worktrees/agent-a5112ce6/src/network/OtaUpdater.cpp
