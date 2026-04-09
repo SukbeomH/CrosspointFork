@@ -20,9 +20,7 @@
 #include "fontIds.h"
 #include "util/ShortcutRegistry.h"
 
-int HomeActivity::getMenuItemCount() const {
-  return static_cast<int>(recentBooks.size() + cachedHomeEntries.size());
-}
+int HomeActivity::getMenuItemCount() const { return static_cast<int>(recentBooks.size() + cachedHomeEntries.size()); }
 
 void HomeActivity::loadRecentBooks(int maxBooks) {
   recentBooks.clear();

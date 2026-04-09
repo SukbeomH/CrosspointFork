@@ -20,9 +20,9 @@ struct ShortcutDefinition {
   ShortcutId id;
   StrId nameId;
   UIIcon icon;
-  uint8_t CrossPointSettings::*locationPtr;
-  uint8_t CrossPointSettings::*orderPtr;
-  uint8_t CrossPointSettings::*visiblePtr;
+  uint8_t CrossPointSettings::* locationPtr;
+  uint8_t CrossPointSettings::* orderPtr;
+  uint8_t CrossPointSettings::* visiblePtr;
 };
 
 inline const std::array<ShortcutDefinition, 4>& getShortcutDefinitions() {
@@ -44,20 +44,17 @@ inline const std::array<ShortcutDefinition, 4>& getShortcutDefinitions() {
 }
 
 inline const ShortcutDefinition* findShortcutDefinition(const ShortcutId id) {
-  for (const auto& definition : getShortcutDefinitions()) {
-    if (definition.id == id) {
-      return &definition;
-    }
-  }
-  return nullptr;
+  const auto& definitions = getShortcutDefinitions();
+  auto it =
+      std::find_if(definitions.begin(), definitions.end(), [id](const ShortcutDefinition& d) { return d.id == id; });
+  return it != definitions.end() ? &(*it) : nullptr;
 }
 
 inline uint8_t getShortcutOrder(const ShortcutDefinition& definition, const CrossPointSettings& settings = SETTINGS) {
   return settings.*(definition.orderPtr);
 }
 
-inline bool getShortcutVisibility(const ShortcutDefinition& definition,
-                                  const CrossPointSettings& settings = SETTINGS) {
+inline bool getShortcutVisibility(const ShortcutDefinition& definition, const CrossPointSettings& settings = SETTINGS) {
   return settings.*(definition.visiblePtr) != 0;
 }
 
@@ -81,9 +78,11 @@ inline void normalizeShortcutOrderSettings(CrossPointSettings& settings) {
   slots.push_back(OrderSlot{0, &settings.appsHubShortcutOrder});
 
   int stableIndex = 1;
-  for (const auto& definition : getShortcutDefinitions()) {
-    slots.push_back(OrderSlot{stableIndex++, &(settings.*(definition.orderPtr))});
-  }
+  const auto& definitions = getShortcutDefinitions();
+  std::transform(definitions.begin(), definitions.end(), std::back_inserter(slots),
+                 [&](const ShortcutDefinition& definition) {
+                   return OrderSlot{stableIndex++, &(settings.*(definition.orderPtr))};
+                 });
 
   std::stable_sort(slots.begin(), slots.end(), [](const OrderSlot& lhs, const OrderSlot& rhs) {
     if (*lhs.value != *rhs.value) {
@@ -107,11 +106,10 @@ inline std::vector<const ShortcutDefinition*> getConfiguredShortcuts(
       shortcuts.push_back(&definition);
     }
   }
-  std::stable_sort(
-      shortcuts.begin(), shortcuts.end(),
-      [](const ShortcutDefinition* lhs, const ShortcutDefinition* rhs) {
-        return getShortcutOrder(*lhs) < getShortcutOrder(*rhs);
-      });
+  std::stable_sort(shortcuts.begin(), shortcuts.end(),
+                   [](const ShortcutDefinition* lhs, const ShortcutDefinition* rhs) {
+                     return getShortcutOrder(*lhs) < getShortcutOrder(*rhs);
+                   });
   return shortcuts;
 }
 

@@ -18,9 +18,7 @@ class TxtReaderChapterSelectionActivity final : public Activity {
  public:
   explicit TxtReaderChapterSelectionActivity(GfxRenderer& renderer, MappedInputManager& mappedInput,
                                              const std::shared_ptr<Txt>& txt, size_t currentByteOffset)
-      : Activity("TxtReaderChapterSelection", renderer, mappedInput),
-        txt(txt),
-        currentByteOffset(currentByteOffset) {}
+      : Activity("TxtReaderChapterSelection", renderer, mappedInput), txt(txt), currentByteOffset(currentByteOffset) {}
   void onEnter() override;
   void onExit() override;
   void loop() override;

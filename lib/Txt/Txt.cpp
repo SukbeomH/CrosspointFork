@@ -395,8 +395,8 @@ void Txt::detectChapters() {
         int start = 0;
         if (skipBom) {
           skipBom = false;
-          if (bufLen >= 3 && static_cast<uint8_t>(lineBuf[0]) == 0xEF &&
-              static_cast<uint8_t>(lineBuf[1]) == 0xBB && static_cast<uint8_t>(lineBuf[2]) == 0xBF) {
+          if (bufLen >= 3 && static_cast<uint8_t>(lineBuf[0]) == 0xEF && static_cast<uint8_t>(lineBuf[1]) == 0xBB &&
+              static_cast<uint8_t>(lineBuf[2]) == 0xBF) {
             start = 3;
           }
         }
