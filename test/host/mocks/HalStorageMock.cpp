@@ -130,7 +130,14 @@ bool HalFile::seek(size_t pos) {
 }
 
 bool HalFile::seekCur(int64_t offset) {
-  pos_ = static_cast<size_t>(static_cast<int64_t>(pos_) + offset);
+  int64_t newPos = static_cast<int64_t>(pos_) + offset;
+  int64_t maxPos = static_cast<int64_t>(size());
+  if (newPos < 0) {
+    newPos = 0;
+  } else if (newPos > maxPos) {
+    newPos = maxPos;
+  }
+  pos_ = static_cast<size_t>(newPos);
   return true;
 }
 

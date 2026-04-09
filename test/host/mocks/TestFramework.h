@@ -10,8 +10,10 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 #include <functional>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace test_fw {
