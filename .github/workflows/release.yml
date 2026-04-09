@@ -37,7 +37,10 @@ jobs:
 
     - name: Set version from tag
       run: |
-        sed -i "s/^crosspoint_version = .*/crosspoint_version = ${{ github.ref_name }}/" platformio.ini
+        sed -i "s/^version = .*/version = ${{ github.ref_name }}/" platformio.ini
+
+    - name: Install esptool
+      run: uv pip install --system esptool
 
     - name: Build CrossPoint
       run: pio run -e gh_release
