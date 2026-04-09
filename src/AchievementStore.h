@@ -33,8 +33,7 @@ enum class AchievementId : uint8_t {
   _COUNT  // Must be <= 16 (fits in uint16_t bitmap)
 };
 
-static_assert(static_cast<int>(AchievementId::_COUNT) <= 16,
-              "Achievement count exceeds 16-bit bitmap capacity");
+static_assert(static_cast<int>(AchievementId::_COUNT) <= 16, "Achievement count exceeds 16-bit bitmap capacity");
 
 struct Achievement {
   const char* title;
@@ -45,11 +44,11 @@ struct Achievement {
 // Aggregate stats collected across all books for achievement evaluation.
 // Populated by the caller before calling checkAndUnlock().
 struct AggregateReadingStats {
-  uint16_t booksOpened = 0;       // Distinct books opened (directories in .crosspoint/)
-  uint16_t totalSessions = 0;     // Sum of all per-book session counts
-  uint32_t totalReadingMs = 0;    // Sum of all per-book reading time
-  uint16_t totalBookmarks = 0;    // Total bookmarks across all books
-  uint8_t consecutiveGoalDays = 0; // Current streak of daily-goal days (caller-tracked)
+  uint16_t booksOpened = 0;
+  uint16_t totalSessions = 0;
+  uint32_t totalReadingMs = 0;
+  uint16_t totalBookmarks = 0;
+  uint8_t consecutiveGoalDays = 0;
 };
 
 class AchievementStore {
