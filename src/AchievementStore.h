@@ -136,9 +136,7 @@ class AchievementStore {
   }
 
   // Query whether a specific achievement is unlocked.
-  bool isUnlocked(AchievementId id) const {
-    return (bitmap_ & (1U << static_cast<uint8_t>(id))) != 0;
-  }
+  bool isUnlocked(AchievementId id) const { return (bitmap_ & (1U << static_cast<uint8_t>(id))) != 0; }
 
   // Get the count of unlocked achievements.
   int unlockedCount() const {
