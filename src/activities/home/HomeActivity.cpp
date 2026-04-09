@@ -18,16 +18,10 @@
 #include "RecentBooksStore.h"
 #include "components/UITheme.h"
 #include "fontIds.h"
+#include "util/ShortcutRegistry.h"
 
 int HomeActivity::getMenuItemCount() const {
-  int count = 4;  // File Browser, Recents, File transfer, Settings
-  if (!recentBooks.empty()) {
-    count += recentBooks.size();
-  }
-  if (hasOpdsUrl) {
-    count++;
-  }
-  return count;
+  return static_cast<int>(recentBooks.size() + getHomeShortcutEntries(hasOpdsUrl).size());
 }
 
 void HomeActivity::loadRecentBooks(int maxBooks) {
@@ -173,6 +167,7 @@ void HomeActivity::freeCoverBuffer() {
 
 void HomeActivity::loop() {
   const int menuCount = getMenuItemCount();
+  const auto homeEntries = getHomeShortcutEntries(hasOpdsUrl);
 
   buttonNavigator.onNext([this, menuCount] {
     selectorIndex = ButtonNavigator::nextIndex(selectorIndex, menuCount);
@@ -185,27 +180,36 @@ void HomeActivity::loop() {
   });
 
   if (mappedInput.wasReleased(MappedInputManager::Button::Confirm)) {
-    // Calculate dynamic indices based on which options are available
-    int idx = 0;
-    int menuSelectedIndex = selectorIndex - static_cast<int>(recentBooks.size());
-    const int fileBrowserIdx = idx++;
-    const int recentsIdx = idx++;
-    const int opdsLibraryIdx = hasOpdsUrl ? idx++ : -1;
-    const int fileTransferIdx = idx++;
-    const int settingsIdx = idx;
-
     if (selectorIndex < recentBooks.size()) {
       onSelectBook(recentBooks[selectorIndex].path);
-    } else if (menuSelectedIndex == fileBrowserIdx) {
-      onFileBrowserOpen();
-    } else if (menuSelectedIndex == recentsIdx) {
-      onRecentsOpen();
-    } else if (menuSelectedIndex == opdsLibraryIdx) {
+      return;
+    }
+
+    const int homeIndex = selectorIndex - static_cast<int>(recentBooks.size());
+    if (homeIndex < 0 || homeIndex >= static_cast<int>(homeEntries.size())) {
+      return;
+    }
+
+    const auto& selectedEntry = homeEntries[homeIndex];
+    if (selectedEntry.isAppsHub) {
+      onAppsOpen();
+    } else if (selectedEntry.isOpds) {
       onOpdsBrowserOpen();
-    } else if (menuSelectedIndex == fileTransferIdx) {
-      onFileTransferOpen();
-    } else if (menuSelectedIndex == settingsIdx) {
-      onSettingsOpen();
+    } else if (selectedEntry.definition) {
+      switch (selectedEntry.definition->id) {
+        case ShortcutId::BrowseFiles:
+          onFileBrowserOpen();
+          break;
+        case ShortcutId::RecentBooks:
+          activityManager.goToRecentBooks();
+          break;
+        case ShortcutId::FileTransfer:
+          activityManager.goToFileTransfer();
+          break;
+        case ShortcutId::Settings:
+          activityManager.goToSettings();
+          break;
+      }
     }
   }
 }
@@ -224,25 +228,18 @@ void HomeActivity::render(RenderLock&&) {
                           recentBooks, selectorIndex, coverRendered, coverBufferStored, bufferRestored,
                           std::bind(&HomeActivity::storeCoverBuffer, this));
 
-  // Build menu items dynamically
-  std::vector<const char*> menuItems = {tr(STR_BROWSE_FILES), tr(STR_MENU_RECENT_BOOKS), tr(STR_FILE_TRANSFER),
-                                        tr(STR_SETTINGS_TITLE)};
-  std::vector<UIIcon> menuIcons = {Folder, Recent, Transfer, Settings};
-
-  if (hasOpdsUrl) {
-    // Insert OPDS Browser after File Browser
-    menuItems.insert(menuItems.begin() + 2, tr(STR_OPDS_BROWSER));
-    menuIcons.insert(menuIcons.begin() + 2, Library);
-  }
+  // Build menu items from shortcut registry
+  const auto homeEntries = getHomeShortcutEntries(hasOpdsUrl);
+  const int selectedHomeIndex = selectorIndex - static_cast<int>(recentBooks.size());
 
   GUI.drawButtonMenu(
       renderer,
       Rect{0, metrics.homeTopPadding + metrics.homeCoverTileHeight + metrics.verticalSpacing, pageWidth,
            pageHeight - (metrics.headerHeight + metrics.homeTopPadding + metrics.verticalSpacing * 2 +
                          metrics.buttonHintsHeight)},
-      static_cast<int>(menuItems.size()), selectorIndex - recentBooks.size(),
-      [&menuItems](int index) { return std::string(menuItems[index]); },
-      [&menuIcons](int index) { return menuIcons[index]; });
+      static_cast<int>(homeEntries.size()), selectedHomeIndex,
+      [&homeEntries](int index) { return getHomeShortcutTitle(homeEntries[index]); },
+      [&homeEntries](int index) { return getHomeShortcutIcon(homeEntries[index]); });
 
   const auto labels = mappedInput.mapLabels("", tr(STR_SELECT), tr(STR_DIR_UP), tr(STR_DIR_DOWN));
   GUI.drawButtonHints(renderer, labels.btn1, labels.btn2, labels.btn3, labels.btn4);
@@ -262,10 +259,6 @@ void HomeActivity::onSelectBook(const std::string& path) { activityManager.goToR
 
 void HomeActivity::onFileBrowserOpen() { activityManager.goToFileBrowser(); }
 
-void HomeActivity::onRecentsOpen() { activityManager.goToRecentBooks(); }
-
-void HomeActivity::onSettingsOpen() { activityManager.goToSettings(); }
-
-void HomeActivity::onFileTransferOpen() { activityManager.goToFileTransfer(); }
+void HomeActivity::onAppsOpen() { activityManager.goToApps(); }
 
 void HomeActivity::onOpdsBrowserOpen() { activityManager.goToBrowser(); }

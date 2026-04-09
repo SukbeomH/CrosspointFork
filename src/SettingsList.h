@@ -13,6 +13,24 @@
 // ACTION-type entries and entries without a key are device-only.
 inline const std::vector<SettingInfo>& getSettingsList() {
   static const std::vector<SettingInfo> list = {
+      // --- Shortcuts ---
+      SettingInfo::Enum(StrId::STR_BROWSE_FILES, &CrossPointSettings::browseFilesShortcut,
+                        {StrId::STR_HOME_LOCATION, StrId::STR_APPS}, "browseFilesShortcut", StrId::STR_CAT_SHORTCUTS),
+      SettingInfo::Toggle(StrId::STR_BROWSE_FILES, &CrossPointSettings::browseFilesShortcutVisible,
+                          "browseFilesShortcutVisible", StrId::STR_CAT_SHORTCUTS),
+      SettingInfo::Enum(StrId::STR_MENU_RECENT_BOOKS, &CrossPointSettings::recentBooksShortcut,
+                        {StrId::STR_HOME_LOCATION, StrId::STR_APPS}, "recentBooksShortcut", StrId::STR_CAT_SHORTCUTS),
+      SettingInfo::Toggle(StrId::STR_MENU_RECENT_BOOKS, &CrossPointSettings::recentBooksShortcutVisible,
+                          "recentBooksShortcutVisible", StrId::STR_CAT_SHORTCUTS),
+      SettingInfo::Enum(StrId::STR_FILE_TRANSFER, &CrossPointSettings::fileTransferShortcut,
+                        {StrId::STR_HOME_LOCATION, StrId::STR_APPS}, "fileTransferShortcut", StrId::STR_CAT_SHORTCUTS),
+      SettingInfo::Toggle(StrId::STR_FILE_TRANSFER, &CrossPointSettings::fileTransferShortcutVisible,
+                          "fileTransferShortcutVisible", StrId::STR_CAT_SHORTCUTS),
+      SettingInfo::Enum(StrId::STR_SETTINGS_TITLE, &CrossPointSettings::settingsShortcut,
+                        {StrId::STR_HOME_LOCATION, StrId::STR_APPS}, "settingsShortcut", StrId::STR_CAT_SHORTCUTS),
+      SettingInfo::Toggle(StrId::STR_SETTINGS_TITLE, &CrossPointSettings::settingsShortcutVisible,
+                          "settingsShortcutVisible", StrId::STR_CAT_SHORTCUTS),
+
       // --- Display ---
       SettingInfo::Enum(StrId::STR_SLEEP_SCREEN, &CrossPointSettings::sleepScreen,
                         {StrId::STR_DARK, StrId::STR_LIGHT, StrId::STR_CUSTOM, StrId::STR_COVER, StrId::STR_NONE_OPT,

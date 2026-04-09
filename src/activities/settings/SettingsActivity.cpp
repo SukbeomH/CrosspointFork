@@ -19,7 +19,8 @@
 #include "fontIds.h"
 
 const StrId SettingsActivity::categoryNames[categoryCount] = {StrId::STR_CAT_DISPLAY, StrId::STR_CAT_READER,
-                                                              StrId::STR_CAT_CONTROLS, StrId::STR_CAT_SYSTEM};
+                                                              StrId::STR_CAT_CONTROLS, StrId::STR_CAT_SYSTEM,
+                                                              StrId::STR_CAT_SHORTCUTS};
 
 void SettingsActivity::onEnter() {
   Activity::onEnter();
@@ -29,6 +30,7 @@ void SettingsActivity::onEnter() {
   readerSettings.clear();
   controlsSettings.clear();
   systemSettings.clear();
+  shortcutsSettings.clear();
 
   for (const auto& setting : getSettingsList()) {
     if (setting.category == StrId::STR_NONE_OPT) continue;
@@ -40,6 +42,8 @@ void SettingsActivity::onEnter() {
       controlsSettings.push_back(setting);
     } else if (setting.category == StrId::STR_CAT_SYSTEM) {
       systemSettings.push_back(setting);
+    } else if (setting.category == StrId::STR_CAT_SHORTCUTS) {
+      shortcutsSettings.push_back(setting);
     }
     // Web-only categories (KOReader Sync, OPDS Browser) are skipped for device UI
   }
@@ -139,6 +143,9 @@ void SettingsActivity::loop() {
         break;
       case 3:
         currentSettings = &systemSettings;
+        break;
+      case 4:
+        currentSettings = &shortcutsSettings;
         break;
     }
     settingsCount = static_cast<int>(currentSettings->size());
