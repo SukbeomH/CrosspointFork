@@ -33,6 +33,10 @@ CLAUDE.md, SKILL.md, Agent 정의 파일을 수정할 때:
 깊은 추론이 필요한 작업(아키텍처 결정, 디버깅 근본 원인, 리팩토링 임팩트) 시
 `empirical-validation` 스킬의 Thinking Budget 섹션 참조.
 
+## Session Handoff
+신규 세션에서 작업 착수 시: `.hxsk/docs/session-handoff-guides.md` 참조.
+로드맵: `docs/plans/2026-04-08-community-fork-integration.md`
+
 ## Agent Boundaries (Claude Code Specific)
 ### Never
 - `--dangerously-skip-permissions` 사용 금지

@@ -4248,6 +4248,12 @@ async function convertEpubFile(file, progressCallback) {
     if (fileObj.dir || path === 'mimetype') continue;
     const low = path.toLowerCase();
 
+    // Strip embedded font files (e-paper uses built-in/SD fonts only)
+    if (low.match(/\.(ttf|otf|woff|woff2|eot)$/)) {
+      log(`Stripped font: ${path.split('/').pop()}`, '', 'FONT');
+      continue;
+    }
+
     if (low.match(/\.(png|gif|webp|bmp|jpg|jpeg)$/)) {
       const data = await fileObj.async('arraybuffer');
       const imageState = getImageState(path);
