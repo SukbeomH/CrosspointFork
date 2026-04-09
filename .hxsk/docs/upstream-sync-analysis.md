@@ -155,58 +155,56 @@ These files contain Korean-specific code and MUST be preserved during merge:
 
 ## 5. Recommended Merge Strategy
 
-### Approach: `merge --no-ff` with manual conflict resolution
+### Approach: Selective cherry-pick (fork independence strategy)
 
-**Why merge (not rebase):**
-- Our fork has 30+ commits of Korean customization since 1.2.0
-- Rebasing would require resolving conflicts for each commit individually
-- Merge preserves our commit history cleanly
-- Previous 1.2.0 merge used the same approach successfully
+**Why cherry-pick (not full merge):**
+- Upstream changes are mostly X3 hardware support and code-style refactoring -- irrelevant to our ESP32-C3 fork
+- Full merge would require resolving 3 conflict files (GfxRenderer, Section.cpp) with 4.5-7.5h effort for minimal functional gain
+- Fork is pursuing an independent direction; selective adoption preserves autonomy
+- Cherry-pick allows precise control over what enters our codebase
 
-### Pre-Merge Preparation
+### Cherry-pick Candidates
 
-1. **FontCacheManager TODO resolution** -- Before merging, resolve the `FontCacheManager` + `UnifiedFontFamily` compatibility (TODO from 1.2.0 merge). This is the #1 blocker.
-2. **Review differential rounding PR #1413** -- Understand the new glyph positioning math before trying to integrate letterSpacing.
-3. **Create test branch** -- Do the merge on a disposable branch first to iterate on conflict resolution.
+| Commit | Description | Conflict Risk | Rationale |
+|--------|-------------|---------------|-----------|
+| `1c13331` | ISO 639-2 hyphenation | LOW | Directly benefits Korean hyphenation |
+| `d29b8ee` | End-of-book navigation | LOW-MED | UX improvement, reader activity touch-up needed |
+| `ed0811c` | WiFi first connection fix | LOW | Practical bug fix |
+| `b898d53` | JPEGDEC patch removal | LOW | Dependency cleanup |
 
-### Merge Steps
+### Excluded from cherry-pick
+
+| Commit | Description | Reason |
+|--------|-------------|--------|
+| `9b38851` | X3 hardware support | Not our hardware (ESP32-C3) |
+| `6cd19f5` | X3 EPUB image fix | X3-specific |
+| `1398aeb` | Differential rounding | HIGH conflict with letterSpacing; cost outweighs benefit |
+| `11984f8`, `f429f90`, `c656673` | C++20 / style refactoring | Code style only |
+| `fa3c7d9`, `cff3e12` | Russian/Ukrainian translations | Not applicable |
+
+### Cherry-pick Steps
 
 ```bash
-# 1. Create merge branch from release/korean
-git checkout -b dev/upstream-sync-merge release/korean
+# 1. Create branch from release/korean
+git checkout -b dev/upstream-cherry-pick release/korean
 
-# 2. Merge upstream/master
-git merge --no-ff upstream/master
+# 2. Cherry-pick functional changes (in dependency order)
+git cherry-pick 1c13331   # ISO 639-2 hyphenation
+git cherry-pick b898d53   # JPEGDEC patch removal
+git cherry-pick ed0811c   # WiFi fix
+git cherry-pick d29b8ee   # End-of-book navigation (may need manual resolution)
 
-# 3. Resolve 3 conflicting files:
-#    a. GfxRenderer.h -- keep UnifiedFontFamily + add X3 panel members
-#    b. GfxRenderer.cpp -- integrate letterSpacing with differential rounding
-#    c. Section.cpp -- combine header layouts, bump version to 22
+# 3. Post-pick verification:
+#    a. CI build pass
+#    b. Verify Korean hyphenation still works
+#    c. Verify reader navigation at book end
 
-# 4. Post-merge verification (build + manual review):
-#    a. Verify EpubReaderActivity.cpp bookmarks work with end-of-book nav
-#    b. Verify TxtReaderActivity.cpp reading stats work
-#    c. Verify main.cpp initialization order (X3 + our features)
-#    d. Verify Korean font rendering (syntheticBold, letterSpacing)
-#    e. Run gen_i18n.py to verify korean.yaml still compiles
-
-# 5. Build test (CI -- local build blocked by corporate SSL proxy)
+# 4. Build test (CI)
 ```
 
-### Conflict Resolution Cheatsheet
+### Post-Cherry-pick Version
 
-| File | Keep Ours | Keep Theirs | Manual Merge |
-|------|-----------|-------------|--------------|
-| `GfxRenderer.h` | UnifiedFontFamily, darkMode, textDarkness, fallbackFontId | X3 panel members, vector bwBufferChunks | Combine both |
-| `GfxRenderer.cpp` hunk 1 | syntheticBold | X3 AA tuning | Combine conditions |
-| `GfxRenderer.cpp` hunk 2 | letterSpacing overload, EpdFontStyle | Differential rounding math | Adapt letterSpacing to new math |
-| `GfxRenderer.cpp` hunk 3 | letterSpacing accumulation | (removed manual advance) | Adapt to new accumulator |
-| `GfxRenderer.cpp` hunk 4 | (our naming) | Differential rounding width calc | Adopt upstream, integrate |
-| `Section.cpp` | Version 21, extra header fields | New header layout | Combine, bump to v22 |
-
-### Post-Merge Version
-
-Update to `1.4.0-ko.1` (upstream sync = minor version bump).
+Keep `1.3.0-ko.x` series (cherry-pick = patch bump, not minor).
 
 ## 6. Estimated Effort
 
