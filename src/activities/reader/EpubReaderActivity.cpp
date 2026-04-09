@@ -241,8 +241,8 @@ void EpubReaderActivity::loop() {
   }
 
   // At end of the book, forward button goes home and back button returns to last page
-  if (currentSpineIndex > 0 && currentSpineIndex >= epub->getSpineItemsCount()) {
-    if (nextTriggered) {
+  if (currentSpineIndex >= epub->getSpineItemsCount()) {
+    if (nextTriggered || epub->getSpineItemsCount() == 0) {
       onGoHome();
     } else {
       currentSpineIndex = epub->getSpineItemsCount() - 1;

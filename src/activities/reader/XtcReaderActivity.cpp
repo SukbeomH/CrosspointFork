@@ -100,7 +100,7 @@ void XtcReaderActivity::loop() {
 
   // At end of the book, forward button goes home and back button returns to last page
   if (currentPage >= xtc->getPageCount()) {
-    if (nextTriggered) {
+    if (nextTriggered || xtc->getPageCount() == 0) {
       onGoHome();
     } else {
       currentPage = xtc->getPageCount() - 1;
