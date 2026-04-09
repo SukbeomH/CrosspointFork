@@ -5,6 +5,7 @@
 #include "../Activity.h"
 #include "./FileBrowserActivity.h"
 #include "util/ButtonNavigator.h"
+#include "util/ShortcutRegistry.h"
 
 struct RecentBook;
 struct Rect;
@@ -20,6 +21,7 @@ class HomeActivity final : public Activity {
   bool coverBufferStored = false;  // Track if cover buffer is stored
   uint8_t* coverBuffer = nullptr;  // HomeActivity's own buffer for cover image
   std::vector<RecentBook> recentBooks;
+  std::vector<HomeShortcutEntry> cachedHomeEntries;
   void onSelectBook(const std::string& path);
   void onFileBrowserOpen();
   void onAppsOpen();

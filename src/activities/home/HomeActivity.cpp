@@ -21,7 +21,7 @@
 #include "util/ShortcutRegistry.h"
 
 int HomeActivity::getMenuItemCount() const {
-  return static_cast<int>(recentBooks.size() + getHomeShortcutEntries(hasOpdsUrl).size());
+  return static_cast<int>(recentBooks.size() + cachedHomeEntries.size());
 }
 
 void HomeActivity::loadRecentBooks(int maxBooks) {
@@ -108,6 +108,7 @@ void HomeActivity::onEnter() {
   hasOpdsUrl = strlen(SETTINGS.opdsServerUrl) > 0;
 
   selectorIndex = 0;
+  cachedHomeEntries = getHomeShortcutEntries(hasOpdsUrl);
 
   const auto& metrics = UITheme::getInstance().getMetrics();
   loadRecentBooks(metrics.homeRecentBooksCount);
@@ -167,7 +168,7 @@ void HomeActivity::freeCoverBuffer() {
 
 void HomeActivity::loop() {
   const int menuCount = getMenuItemCount();
-  const auto homeEntries = getHomeShortcutEntries(hasOpdsUrl);
+  const auto& homeEntries = cachedHomeEntries;
 
   buttonNavigator.onNext([this, menuCount] {
     selectorIndex = ButtonNavigator::nextIndex(selectorIndex, menuCount);
@@ -228,8 +229,8 @@ void HomeActivity::render(RenderLock&&) {
                           recentBooks, selectorIndex, coverRendered, coverBufferStored, bufferRestored,
                           std::bind(&HomeActivity::storeCoverBuffer, this));
 
-  // Build menu items from shortcut registry
-  const auto homeEntries = getHomeShortcutEntries(hasOpdsUrl);
+  // Use cached shortcut entries
+  const auto& homeEntries = cachedHomeEntries;
   const int selectedHomeIndex = selectorIndex - static_cast<int>(recentBooks.size());
 
   GUI.drawButtonMenu(
