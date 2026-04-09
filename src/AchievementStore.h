@@ -15,22 +15,22 @@
 // UI Activity is NOT included here -- this is data/logic only.
 
 enum class AchievementId : uint8_t {
-  FirstBookOpened = 0,   // Open your first book
-  FiveBooksOpened,       // Open 5 different books
-  TenBooksOpened,        // Open 10 different books
-  TwentyFiveBooksOpened, // Open 25 different books
-  FirstSession,          // Complete your first reading session
-  TenSessions,           // Complete 10 reading sessions
-  TwentyFiveSessions,    // Complete 25 sessions
-  FiftySessions,         // Complete 50 sessions
-  OneHourTotal,          // Read for 1 hour total
-  FiveHoursTotal,        // Read for 5 hours total
-  TenHoursTotal,         // Read for 10 hours total
-  TwentyFourHoursTotal,  // Read for 24 hours total
-  FirstBookmark,         // Add your first bookmark
-  ThreeDayStreak,        // Meet daily goal 3 days in a row
-  SevenDayStreak,        // Meet daily goal 7 days in a row
-  _COUNT                 // Must be <= 16 (fits in uint16_t bitmap)
+  FirstBookOpened = 0,
+  FiveBooksOpened,
+  TenBooksOpened,
+  TwentyFiveBooksOpened,
+  FirstSession,
+  TenSessions,
+  TwentyFiveSessions,
+  FiftySessions,
+  OneHourTotal,
+  FiveHoursTotal,
+  TenHoursTotal,
+  TwentyFourHoursTotal,
+  FirstBookmark,
+  ThreeDayStreak,
+  SevenDayStreak,
+  _COUNT  // Must be <= 16 (fits in uint16_t bitmap)
 };
 
 static_assert(static_cast<int>(AchievementId::_COUNT) <= 16,
