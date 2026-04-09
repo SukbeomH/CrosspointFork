@@ -118,8 +118,8 @@ class StreamingEpdFont {
 
   // Font file metadata (in RAM)
   EpdFontHeader _header;
-  EpdGlyph* _glyphs = nullptr;          // Full glyph table (advanceX already in fp4)
-  EpdFontInterval* _intervals = nullptr; // Unicode interval table
+  EpdGlyph* _glyphs = nullptr;            // Full glyph table (advanceX already in fp4)
+  EpdFontInterval* _intervals = nullptr;  // Unicode interval table
   uint32_t _glyphCount = 0;
 
   // File handle (kept open for streaming)
