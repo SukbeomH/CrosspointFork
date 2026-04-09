@@ -1,8 +1,20 @@
 name: Compile Release
+
 on:
   push:
     tags:
-    - '*'
+      - '*-ko.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to build and release (e.g. 1.3.0-ko.2)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -10,10 +22,14 @@ permissions:
 jobs:
   build-release:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
     steps:
     - uses: actions/checkout@v6
       with:
         submodules: recursive
+        # Fetch history for release notes generation
+        fetch-depth: 0
 
     - uses: actions/cache@v5
       with:
@@ -37,18 +53,19 @@ jobs:
 
     - name: Set version from tag
       run: |
-        sed -i "s/^version = .*/version = ${{ github.ref_name }}/" platformio.ini
+        sed -i "s/^version = .*/version = ${{ env.RELEASE_TAG }}/" platformio.ini
 
     - name: Install esptool
       run: uv pip install --system esptool
 
+    # ── Standard release build (gh_release env: LOG_LEVEL=1) ──
     - name: Build CrossPoint
       run: pio run -e gh_release
 
     - name: Merge firmware binaries
       run: |
         esptool.py --chip esp32c3 merge_bin \
-          -o .pio/build/gh_release/CrossPoint-${{ github.ref_name }}.bin \
+          -o .pio/build/gh_release/CrossPoint-${{ env.RELEASE_TAG }}.bin \
           --flash_mode dio \
           --flash_freq 80m \
           --flash_size 16MB \
@@ -56,29 +73,82 @@ jobs:
           0x8000 .pio/build/gh_release/partitions.bin \
           0x10000 .pio/build/gh_release/firmware.bin
 
+    # ── Slim build (no serial, smaller footprint) ──
+    # Note: env:slim appends -slim to ${crosspoint.version} automatically,
+    # so no additional version patching is needed here.
+    - name: Build CrossPoint Slim
+      run: pio run -e slim
+
+    - name: Merge slim firmware binaries
+      run: |
+        esptool.py --chip esp32c3 merge_bin \
+          -o .pio/build/slim/CrossPoint-${{ env.RELEASE_TAG }}-slim.bin \
+          --flash_mode dio \
+          --flash_freq 80m \
+          --flash_size 16MB \
+          0x0 .pio/build/slim/bootloader.bin \
+          0x8000 .pio/build/slim/partitions.bin \
+          0x10000 .pio/build/slim/firmware.bin
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: CrossPoint-${{ github.ref_name }}
+        name: CrossPoint-${{ env.RELEASE_TAG }}
         path: |
           .pio/build/gh_release/bootloader.bin
           .pio/build/gh_release/firmware.bin
           .pio/build/gh_release/firmware.elf
           .pio/build/gh_release/firmware.map
           .pio/build/gh_release/partitions.bin
+          .pio/build/slim/firmware.bin
+
+    - name: Generate Release Notes
+      id: release_notes
+      run: |
+        # Find the previous ko tag for changelog range
+        PREV_TAG=$(git tag --list '*-ko.*' --sort=-version:refname | grep -v "^${{ env.RELEASE_TAG }}$" | head -1)
+        echo "prev_tag=${PREV_TAG}" >> "$GITHUB_OUTPUT"
+
+        {
+          echo 'RELEASE_BODY<<EOF'
+          echo "## CrossPoint Korean Fork ${{ env.RELEASE_TAG }}"
+          echo ""
+          echo "### Assets"
+          echo "| File | Description |"
+          echo "|------|-------------|"
+          echo "| \`firmware.bin\` | OTA update binary (flash at 0x10000) |"
+          echo "| \`CrossPoint-${{ env.RELEASE_TAG }}.bin\` | Full merged flash image (bootloader + partitions + firmware) |"
+          echo "| \`CrossPoint-${{ env.RELEASE_TAG }}-slim.bin\` | Slim build — no serial logging, smaller footprint |"
+          echo "| \`bootloader.bin\` | Bootloader binary |"
+          echo "| \`partitions.bin\` | Partition table |"
+          echo ""
+          if [ -n "$PREV_TAG" ]; then
+            echo "### Changes since ${PREV_TAG}"
+            echo ""
+            git log "${PREV_TAG}..HEAD" --pretty=format:"- %s (%h)" --no-merges 2>/dev/null || echo "- Initial release"
+          else
+            echo "### Initial Release"
+          fi
+          echo ""
+          echo ""
+          echo "---"
+          echo "*Built from [\`release/korean\`](https://github.com/SukbeomH/CrosspointFork/tree/release/korean) branch*"
+          echo 'EOF'
+        } >> "$GITHUB_ENV"
 
     - name: Create Release with Assets
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: ${{ env.RELEASE_TAG }}
+        name: CrossPoint ${{ env.RELEASE_TAG }}
+        body: ${{ env.RELEASE_BODY }}
         files: |
-          .pio/build/gh_release/CrossPoint-${{ github.ref_name }}.bin
+          .pio/build/gh_release/CrossPoint-${{ env.RELEASE_TAG }}.bin
           .pio/build/gh_release/firmware.bin
           .pio/build/gh_release/bootloader.bin
           .pio/build/gh_release/partitions.bin
-        generate_release_notes: false
+          .pio/build/slim/CrossPoint-${{ env.RELEASE_TAG }}-slim.bin
+        generate_release_notes: true
+        append_body: true
         draft: false
-        prerelease: false
-
-    # Docs deployment disabled for this fork
-    # - name: Trigger docs deployment
-    #   run: gh workflow run deploy.yml -R crosspoint-reader-ko/crosspoint-reader-docs
+        prerelease: ${{ github.event.inputs.prerelease || false }}
