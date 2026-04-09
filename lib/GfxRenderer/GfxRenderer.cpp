@@ -38,6 +38,10 @@ void GfxRenderer::insertSdFont(const int fontId, SdFontFamily* font) {
   fontMap[fontId] = std::unique_ptr<UnifiedFontFamily>(new UnifiedFontFamily(font));
 }
 
+void GfxRenderer::insertStreamingFont(const int fontId, StreamingSdFontFamily* font) {
+  fontMap[fontId] = std::unique_ptr<UnifiedFontFamily>(new UnifiedFontFamily(font));
+}
+
 bool GfxRenderer::removeFont(const int fontId) {
   auto it = fontMap.find(fontId);
   if (it == fontMap.end()) {

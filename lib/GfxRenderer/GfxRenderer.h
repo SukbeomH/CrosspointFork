@@ -78,6 +78,8 @@ class GfxRenderer {
   void insertFont(int fontId, const EpdFontFamily* font);
   // SD card fonts (SdFontFamily) - takes ownership
   void insertSdFont(int fontId, SdFontFamily* font);
+  // Streaming SD card fonts (StreamingSdFontFamily) - takes ownership, lower RAM
+  void insertStreamingFont(int fontId, StreamingSdFontFamily* font);
   // Set fallback font ID (used when requested font is not found)
   void setFallbackFont(int fontId) { fallbackFontId = fontId; }
   // Check if a font is registered

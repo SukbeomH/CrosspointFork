@@ -5,7 +5,8 @@
 
 #include <cstring>
 
-FontCacheManager::FontCacheManager(const std::map<int, EpdFontFamily>& fontMap) : fontMap_(fontMap) {}
+FontCacheManager::FontCacheManager(const std::map<int, std::unique_ptr<UnifiedFontFamily>>& fontMap)
+    : fontMap_(fontMap) {}
 
 void FontCacheManager::setFontDecompressor(FontDecompressor* d) { fontDecompressor_ = d; }
 
@@ -19,7 +20,7 @@ void FontCacheManager::prewarmCache(int fontId, const char* utf8Text, uint8_t st
   for (uint8_t i = 0; i < 4; i++) {
     if (!(styleMask & (1 << i))) continue;
     auto style = static_cast<EpdFontFamily::Style>(i);
-    const EpdFontData* data = fontMap_.at(fontId).getData(style);
+    const EpdFontData* data = fontMap_.at(fontId)->getData(style);
     if (!data || !data->groups) continue;
     int missed = fontDecompressor_->prewarmCache(data, utf8Text);
     if (missed > 0) {

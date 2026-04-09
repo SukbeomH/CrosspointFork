@@ -69,3 +69,7 @@
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/scripts/fontconvert.py
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/SdFontFormat.h
 /Users/sukbeom/.superset/projects/CrosspointFork/lib/EpdFont/scripts/ttf_to_epdfont.py
+/Users/sukbeom/.superset/projects/CrosspointFork/lib/GfxRenderer/FontCacheManager.h
+/Users/sukbeom/.superset/projects/CrosspointFork/lib/GfxRenderer/FontCacheManager.cpp
+/private/tmp/claude-504/-Users-sukbeom--superset-projects-CrosspointFork/0cff48c2-5559-462e-b5ea-b87fd7244df1/tasks/bc0ijbk82.output
+/Users/sukbeom/.superset/projects/CrosspointFork/bin/clang-format-fix

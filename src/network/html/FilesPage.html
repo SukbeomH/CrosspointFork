@@ -3338,6 +3338,44 @@ function exportLogToFile(filename = null, isBatch = false) {
 /** Defensive CSS injected into every XHTML <head> — prevents e-ink overflow. */
 const DEFENSIVE_STYLE = '<style type="text/css">img,svg{max-width:100%;height:auto}body{overflow-wrap:break-word}table{max-width:100%;table-layout:fixed}pre,code{white-space:pre-wrap;word-wrap:break-word}*{box-sizing:border-box}</style>';
 
+/**
+ * Clean CSS for e-paper rendering: remove problematic properties.
+ * Strips float, position:fixed/absolute, flex, grid, animations,
+ * @font-face, @media, @keyframes, @supports, @import blocks.
+ */
+function cleanCssForEpaper(css) {
+  const problematic = [
+    /float\s*:\s*[^;]+;?/gi,
+    /position\s*:\s*(fixed|absolute|sticky)[^;]*;?/gi,
+    /display\s*:\s*(flex|grid|inline-flex|inline-grid)[^;]*;?/gi,
+    /transform[^;]*;?/gi,
+    /animation[^;]*;?/gi,
+    /transition[^;]*;?/gi,
+    /opacity\s*:\s*[^;]+;?/gi,
+    /box-shadow[^;]*;?/gi,
+    /text-shadow[^;]*;?/gi,
+  ];
+  for (const p of problematic) css = css.replace(p, '');
+  // Strip @-rule blocks
+  for (const rule of ['@font-face', '@media', '@keyframes', '@supports']) {
+    let result = '', i = 0;
+    while (i < css.length) {
+      const idx = css.indexOf(rule, i);
+      if (idx === -1) { result += css.slice(i); break; }
+      result += css.slice(i, idx);
+      const brace = css.indexOf('{', idx);
+      if (brace === -1) { result += css.slice(idx); break; }
+      let depth = 1, j = brace + 1;
+      while (j < css.length && depth > 0) { if (css[j] === '{') depth++; else if (css[j] === '}') depth--; j++; }
+      i = j;
+    }
+    css = result;
+  }
+  // Strip @import
+  css = css.replace(/@import\s+[^;]+;/gi, '');
+  return css;
+}
+
 /** Escape a string for safe insertion into XML attribute values / text content. */
 function xmlEscape(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -4438,6 +4476,11 @@ async function convertEpubFile(file, progressCallback) {
     } catch (e) {
       console.warn('DOMParser error for', xhtmlPath, e.message);
     }
+
+    // Clean CSS for e-paper: remove floats, flex, grid, @font-face, etc.
+    t = t.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, (match, css) => {
+      return match.replace(css, cleanCssForEpaper(css));
+    });
 
     // Inject universal image constraint — prevents overflow on e-ink displays
     if (t.includes('</head>')) {
