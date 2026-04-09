@@ -27,6 +27,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
       with:
+        ref: ${{ env.RELEASE_TAG }}
         submodules: recursive
         # Fetch history for release notes generation
         fetch-depth: 0
@@ -106,7 +107,7 @@ jobs:
       id: release_notes
       run: |
         # Find the previous ko tag for changelog range
-        PREV_TAG=$(git tag --list '*-ko.*' --sort=-version:refname | grep -v "^${{ env.RELEASE_TAG }}$" | head -1)
+        PREV_TAG=$(git tag --list '*-ko.*' --sort=-version:refname | grep -Fvx "${{ env.RELEASE_TAG }}" | head -1)
         echo "prev_tag=${PREV_TAG}" >> "$GITHUB_OUTPUT"
 
         {
