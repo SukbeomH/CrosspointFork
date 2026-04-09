@@ -219,7 +219,8 @@ void WifiSelectionActivity::attemptConnection() {
 
   WiFi.persistent(false);  // Credentials are managed by WifiCredentialStore; suppress SDK NVS auto-connect
   WiFi.mode(WIFI_STA);
-  WiFi.disconnect(false, true);  // Abort any in-progress SDK auto-connect and clear NVS-saved SSID without powering WiFi off
+  WiFi.disconnect(false,
+                  true);  // Abort any in-progress SDK auto-connect and clear NVS-saved SSID without powering WiFi off
   delay(100);
 
   // Set hostname so routers show "CrossPoint-Reader-AABBCCDDEEFF" instead of "esp32-XXXXXXXXXXXX"

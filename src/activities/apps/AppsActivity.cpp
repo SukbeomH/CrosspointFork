@@ -59,10 +59,10 @@ void AppsActivity::render(RenderLock&&) {
   if (appShortcuts.empty()) {
     renderer.drawCenteredText(UI_FONT_ID, contentTop + 24, tr(STR_NO_ENTRIES));
   } else {
-    GUI.drawList(renderer, Rect{0, contentTop, pageWidth, contentHeight}, static_cast<int>(appShortcuts.size()),
-                 selectedIndex,
-                 [this](const int index) { return std::string(I18N.get(appShortcuts[index]->nameId)); }, nullptr,
-                 [this](const int index) { return appShortcuts[index]->icon; });
+    GUI.drawList(
+        renderer, Rect{0, contentTop, pageWidth, contentHeight}, static_cast<int>(appShortcuts.size()), selectedIndex,
+        [this](const int index) { return std::string(I18N.get(appShortcuts[index]->nameId)); }, nullptr,
+        [this](const int index) { return appShortcuts[index]->icon; });
   }
 
   const auto labels = mappedInput.mapLabels(tr(STR_HOME), tr(STR_SELECT), tr(STR_DIR_UP), tr(STR_DIR_DOWN));

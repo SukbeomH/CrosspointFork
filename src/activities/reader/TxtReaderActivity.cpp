@@ -131,9 +131,8 @@ void TxtReaderActivity::loop() {
   if (mappedInput.wasReleased(MappedInputManager::Button::Confirm)) {
     if (txt && txt->hasChapters()) {
       // Get the byte offset of the current page for initial highlight
-      size_t currentOffset = (currentPage >= 0 && currentPage < static_cast<int>(pageOffsets.size()))
-                                 ? pageOffsets[currentPage]
-                                 : 0;
+      size_t currentOffset =
+          (currentPage >= 0 && currentPage < static_cast<int>(pageOffsets.size())) ? pageOffsets[currentPage] : 0;
       startActivityForResult(
           std::make_unique<TxtReaderChapterSelectionActivity>(renderer, mappedInput, txt, currentOffset),
           [this](const ActivityResult& result) {
