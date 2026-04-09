@@ -10,6 +10,7 @@
 #include <Logging.h>
 #include <esp_system.h>
 
+#include "AchievementStore.h"
 #include "CrossPointSettings.h"
 #include "CrossPointState.h"
 #include "EpubReaderChapterSelectionActivity.h"
@@ -118,6 +119,19 @@ void EpubReaderActivity::onExit() {
             readingStats.sessionCount);
   }
   if (epub) readingStats.saveToFile(epub->getCachePath());
+
+  // Check achievements after stats update
+  {
+    static AchievementStore achievementStore;
+    achievementStore.loadFromFile();
+    AggregateReadingStats aggStats;
+    aggStats.booksOpened = 1;  // At minimum, this book is open
+    aggStats.totalSessions = readingStats.sessionCount;
+    aggStats.totalReadingMs = readingStats.totalReadingMs;
+    aggStats.totalBookmarks = static_cast<uint16_t>(bookmarkStore.getAll().size());
+    achievementStore.checkAndUnlock(aggStats);
+  }
+
   savedGlobalSettings.applyToGlobal();  // Restore global settings
 
   // Reset orientation back to portrait for the rest of the UI
