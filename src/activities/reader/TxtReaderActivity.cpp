@@ -13,6 +13,7 @@
 #include "MappedInputManager.h"
 #include "ReaderUtils.h"
 #include "RecentBooksStore.h"
+#include "TxtReaderChapterSelectionActivity.h"
 #include "components/UITheme.h"
 #include "fontIds.h"
 
@@ -98,6 +99,9 @@ void TxtReaderActivity::onEnter() {
 
   txt->setupCacheDir();
 
+  // Detect chapters (uses cache if available, otherwise streaming scan)
+  txt->detectChapters();
+
   // Save current txt as last opened file and add to recent books
   auto filePath = txt->getPath();
   auto fileName = filePath.substr(filePath.rfind('/') + 1);
@@ -123,6 +127,28 @@ void TxtReaderActivity::onExit() {
 }
 
 void TxtReaderActivity::loop() {
+  // Confirm button opens chapter selection (if chapters were detected)
+  if (mappedInput.wasReleased(MappedInputManager::Button::Confirm)) {
+    if (txt && txt->hasChapters()) {
+      // Get the byte offset of the current page for initial highlight
+      size_t currentOffset = (currentPage >= 0 && currentPage < static_cast<int>(pageOffsets.size()))
+                                 ? pageOffsets[currentPage]
+                                 : 0;
+      startActivityForResult(
+          std::make_unique<TxtReaderChapterSelectionActivity>(renderer, mappedInput, txt, currentOffset),
+          [this](const ActivityResult& result) {
+            if (!result.isCancelled) {
+              const auto& chapterResult = std::get<TxtChapterResult>(result.data);
+              int targetPage = findPageForByteOffset(chapterResult.byteOffset);
+              if (targetPage != currentPage) {
+                currentPage = targetPage;
+              }
+            }
+            requestUpdate();
+          });
+    }
+  }
+
   // Long press BACK (1s+) goes to file selection
   if (mappedInput.isPressed(MappedInputManager::Button::Back) && mappedInput.getHeldTime() >= ReaderUtils::GO_HOME_MS) {
     activityManager.goToFileBrowser(txt ? txt->getPath() : "");
@@ -649,4 +675,25 @@ void TxtReaderActivity::savePageIndexCache() const {
 
   f.close();
   LOG_DBG("TRS", "Saved page index cache: %d pages", totalPages);
+}
+
+int TxtReaderActivity::findPageForByteOffset(size_t byteOffset) const {
+  if (pageOffsets.empty()) return 0;
+
+  // Binary search for the last page whose offset <= byteOffset
+  int low = 0;
+  int high = static_cast<int>(pageOffsets.size()) - 1;
+  int best = 0;
+
+  while (low <= high) {
+    int mid = (low + high) / 2;
+    if (pageOffsets[mid] <= byteOffset) {
+      best = mid;
+      low = mid + 1;
+    } else {
+      high = mid - 1;
+    }
+  }
+
+  return best;
 }

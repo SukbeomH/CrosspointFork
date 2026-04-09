@@ -2,13 +2,14 @@
 
 #include <Txt.h>
 
+#include <memory>
 #include <vector>
 
 #include "CrossPointSettings.h"
 #include "activities/Activity.h"
 
 class TxtReaderActivity final : public Activity {
-  std::unique_ptr<Txt> txt;
+  std::shared_ptr<Txt> txt;
 
   int currentPage = 0;
   int totalPages = 1;
@@ -43,9 +44,12 @@ class TxtReaderActivity final : public Activity {
   void saveProgress() const;
   void loadProgress();
 
+  // Chapter navigation: find the page index closest to a given byte offset
+  int findPageForByteOffset(size_t byteOffset) const;
+
  public:
-  explicit TxtReaderActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, std::unique_ptr<Txt> txt)
-      : Activity("TxtReader", renderer, mappedInput), txt(std::move(txt)) {}
+  explicit TxtReaderActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, std::unique_ptr<Txt> txtIn)
+      : Activity("TxtReader", renderer, mappedInput), txt(std::move(txtIn)) {}
   void onEnter() override;
   void onExit() override;
   void loop() override;
